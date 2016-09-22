@@ -1,29 +1,31 @@
 from HelperFunctions import*
-from triangle import*
+from square import*
         		
 class Branch(object):
-	def __init__(self, trimodel, color, pos, dir, life):
-		self.tri = trimodel
+	def __init__(self, squaremodel, square_num, color, pos, dir, life, decay):
+		self.square = squaremodel
+		self.square_num = square_num
 		self.color = color
 		self.pos = pos
 		self.dir = dir
-		self.life = life	# How long the branch has been around
+		self.life = life
+		self.decay = decay
 
 	def draw_branch(self, inversion):
 		if inversion:
-			ratio = self.life/10.0 # dark center
+			ratio = self.life / float(self.decay)  # dark center
 		else:
-			ratio = 1 - self.life/40.0 # light center
+			ratio = 1 - self.life / float(self.decay) # light center
 		
-		self.tri.set_cell(self.pos, gradient_wheel(self.color, ratio))
+		self.square.set_cell(self.pos, gradient_wheel(self.color, ratio))
 							
 		# Random chance that path changes
 		if oneIn(3):
 			self.dir = turn_left_or_right(self.dir)
 	
 	def move_branch(self):			
-		newspot = tri_in_direction(self.pos, self.dir, 1)	# Where is the branch going?
-		if self.tri.is_on_board(newspot) and self.life < 40:# Is new spot off the board?
+		newspot = square_in_direction(self.pos, self.dir, 1)	# Where is the branch going?
+		if self.square.is_on_square(self.square_num, newspot) and self.life < 40:# Is new spot off the board?
 			self.pos = newspot	# On board. Update spot
 			self.life += 1
 			return True
@@ -31,13 +33,15 @@ class Branch(object):
 				
 				
 class CenterBranches(object):
-	def __init__(self, trimodel):
+	def __init__(self, squaremodel):
 		self.name = "Center Branches"        
-		self.tri = trimodel
+		self.square = squaremodel
 		self.livebranches = []	# List that holds Branch objects
 		self.speed = 0.05
 		self.maincolor =  randColor()	# Main color of the show
 		self.inversion = randint(0,1)	# Toggle for effects
+		self.fork = randint(5,30)
+		self.decay = randint(4,20)
 		          
 	def next_frame(self):
     	
@@ -45,26 +49,33 @@ class CenterBranches(object):
 			
 			# Add a center branch
 			
-			if len(self.livebranches) == 0 or oneIn(30):
-				for center in all_centers():
-					newbranch = Branch(self.tri,
-						self.maincolor, # color
-						center, 		# center
-						randDir(), 		# Random initial direction
-						0)				# Life = 0 (new branch)
-					self.livebranches.append(newbranch)
-				self.maincolor = (self.maincolor + 50) % maxColor
+			if len(self.livebranches) == 0 or oneIn(3):
+				sq = self.square.rand_square()  # Pick a random Square
+				newbranch = Branch(self.square, sq, self.maincolor, get_center(sq), randDir(), 0, self.decay)
+				self.livebranches.append(newbranch)
 				
 			for b in self.livebranches:
 				b.draw_branch(self.inversion)
 				
 				# Chance for branching
-				if oneIn(20):	# Create a fork
+				if oneIn(self.fork):	# Create a fork
 					newdir = turn_left_or_right(b.dir)
-					newbranch = Branch(self.tri, b.color, b.pos, newdir, b.life)
+					newbranch = Branch(self.square, b.square_num, b.color, b.pos, newdir, b.life, b.decay)
 					self.livebranches.append(newbranch)
 					
 				if b.move_branch() == False:	# branch has moved off the board
 					self.livebranches.remove(b)	# kill the branch
-			
+
+			if oneIn(10):
+				self.decay = upORdown(self.decay, 1, 4, 20)
+
+			if oneIn(10):
+				self.fork = upORdown(self.fork, 1, 5, 30)
+
+			if oneIn(20):
+				self.maincolor = randColorRange(self.maincolor, 50)
+
+			if oneIn(500):
+				self.inversion = randint(0, 1)  # Toggle for effects
+
 			yield self.speed

@@ -10,7 +10,7 @@ Parameters for each Square: (X, Y)
 """
 BIG_COORD = [ (0,0), (1,0), (0,1), (1,1) ]
 
-from random import choice
+from random import choice, randint
 
 def load_squares(model):
     return Square(model)
@@ -121,6 +121,29 @@ class Square(object):
     def rand_cell(self):
         return choice(self.cellmap.keys())
 
+    def rand_square(self):
+        return randint(0, len(BIG_COORD)-1)
+
+    def num_squares(self):
+        return len(BIG_COORD)
+
+    def edges(self, square_num):
+        "Return a list of edges for the particular sq number"
+        (x_offset, y_offset) = get_LL_corner(square_num)
+
+        bottom = [(x_offset + x, y_offset) for x in range(SQUARE_SIZE)]
+        top = [(x_offset + x, y_offset + SQUARE_SIZE - 1) for x in range(SQUARE_SIZE)]
+        left = [(x_offset, y_offset + y) for y in range(1, SQUARE_SIZE - 1)]
+        right = [(x_offset + SQUARE_SIZE - 1, y_offset + y) for y in range(1, SQUARE_SIZE - 1)]
+
+        return bottom + top + left + right
+
+    def is_on_square(self, square_num, coord):
+        (x, y) = coord
+        (x_corner, y_corner) = get_LL_corner(square_num)
+        return x_corner <= x < x_corner + SQUARE_SIZE and y_corner <= y < y_corner + SQUARE_SIZE
+
+
 ##
 ## square cell primitives
 ##
@@ -174,3 +197,42 @@ def get_rand_neighbor(coord):
     Neighbor may not be in bounds
     """
     return choice(neighbors(coord))
+
+def get_LL_corner(square_num):
+    """
+    Returns the lower-left coordinate of the square_num
+    """
+    (big_x, big_y) = BIG_COORD[square_num]
+    return (big_x * SQUARE_SIZE, big_y * SQUARE_SIZE)
+
+def get_center(square_num):
+    """
+    Returns the center coordinate of the square_num
+    """
+    half_square = SQUARE_SIZE // 2
+    (x_ll, y_ll) = get_LL_corner(square_num)
+    return (x_ll + half_square, y_ll + half_square)
+
+def square_shape(coord, size):
+    """
+    Get the cells of a square whose lower-left corner is at coord
+    """
+    (x_ll, y_ll) = coord
+    return [(x + x_ll, y + y_ll) for x in range(size) for y in range(size)]
+
+def mirror_coords(coord, sym=4):
+    """
+    Return the 1, 2, or 4 mirror coordinates
+    """
+    if sym == 1:
+        return [coord]
+
+    (x, y) = coord
+    x_offset, y_offset = x % SQUARE_SIZE, y % SQUARE_SIZE
+    x_ll, y_ll = x - x_offset, y - y_offset
+
+    if sym == 2:
+        return [(x_offset + x_ll, y_offset + y_ll), (SQUARE_SIZE - y_offset + x_ll, SQUARE_SIZE - x_offset + y_ll)]
+    else:
+        return [(x_offset + x_ll, y_offset + y_ll), (y_offset + x_ll, SQUARE_SIZE - x_offset + y_ll),
+                (SQUARE_SIZE - y_offset + x_ll, SQUARE_SIZE - x_offset + y_ll), (SQUARE_SIZE - y_offset + x_ll, x_offset + y_ll)]

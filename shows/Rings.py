@@ -1,11 +1,11 @@
 from HelperFunctions import*
-from triangle import*
+from square import*
 
 class Ball(object):
-	def __init__(self, trimodel, maincolor):
-		self.tri = trimodel
+	def __init__(self, squaremodel, maincolor):
+		self.square = squaremodel
 		self.color = randColorRange(maincolor, 100)
-		self.pos = self.tri.get_rand_cell()
+		self.pos = self.square.rand_cell()
 		self.size = randint(5,8)	# Random ball size
 		self.dir = randDir()		# Direction of ball's travel
 		self.life = randint(50,200)	# how long a ball is around
@@ -20,26 +20,26 @@ class Ball(object):
 	def draw_ball(self):
 		for i in range(self.size-3):
 			intensity =(i+1) / (self.size - 3.0)
-			self.tri.set_cells(tri_shape(tri_in_direction(self.pos,1,i*2), self.size),
+			self.square.set_cells(square_shape(square_in_direction(self.pos,1, i), self.size),
 				gradient_wheel(self.color, intensity))
 	
 	def move_ball(self):
-		tries = 20
-		while (tries > 0):
-			newspot = tri_in_direction(self.pos, self.dir, 2)	# Where is the ball going?
-			if self.tri.cell_exists(newspot):	# Is new spot off the board?
+		squares = 20
+		while (squares > 0):
+			newspot = square_in_direction(self.pos, self.dir, 2)	# Where is the ball going?
+			if self.square.cell_exists(newspot):	# Is new spot off the board?
 				self.pos = newspot	# On board. Update spot
 				return
 			else:
-				tries -= 1
+				squares -= 1
 				self.dir = randDir()	# Off board. Pick a new direction
 		self.life = 0	# Ball is stuck - kill it
 		return	
 				
 class Rings(object):
-    def __init__(self, trimodel):
+    def __init__(self, squaremodel):
         self.name = "Rings"        
-        self.tri = trimodel
+        self.square = squaremodel
         self.balls = []	# List that holds Balls objects
         self.speed = 0.1
         self.maincolor =  randColor()
@@ -51,11 +51,11 @@ class Rings(object):
 			# Check how many balls are in play
 			# If no balls, add one. Otherwise if balls < 8, add more balls randomly
 			while len(self.balls) < 8:
-				newball = Ball(self.tri, self.maincolor)
+				newball = Ball(self.square, self.maincolor)
 				self.balls.append(newball)
 			
 			# Black the screen
-			self.tri.set_all_cells([0,0,0])
+			self.square.set_all_cells([0,0,0])
 			
 			# Draw all the balls
 			# Increase the size of each drop - kill a drop if at full size

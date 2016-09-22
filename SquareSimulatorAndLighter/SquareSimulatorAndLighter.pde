@@ -1,5 +1,4 @@
 /*
-
   Square Simulator and Lighter
   
   1. Simulator: draws squares on the monitor
@@ -8,7 +7,7 @@
   Includes Tiling of
   Multiple Big Square Grids
   
-  9/11/16
+  9/22/16
   
   Main parameter is square PIXEL_WIDTH, or number of squares on the base
   PIXEL_WIDTH is fixed at 12 for 144 total squares.
@@ -145,9 +144,9 @@ boolean VIDEO_STATE = false;  // Whether video is playing
 Movie myMovie;                // The current animated gif
 int movie_number;             // current movie number
 //int MOVIE_SIZE = 500;   // Maximum 500 x 500 pixel gif animations
-int PIX_DENSITY = 10;  // How many pixels wide is each little square
-int FRAME_WIDTH = (int)(grid_width() * PIX_DENSITY * PIXEL_WIDTH);
-int FRAME_HEIGHT = (int)(grid_height() * PIX_DENSITY * PIXEL_WIDTH);
+int PIX_DENSITY = 10;  // How many screen-pixels wide is each little square
+int FRAME_WIDTH = pix_width * PIX_DENSITY;
+int FRAME_HEIGHT = pix_height * PIX_DENSITY;
 float[] movie_speeds = { 0.0, 0.2, 0.4, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0 };
 String[] movie_titles = { "penguin", "Earth", "banana", "bluedot", "nyancat" };
 
@@ -237,7 +236,7 @@ class PixelArray {
     int numdata = Pixels[x][y].numitems;
     if (numdata == 0) {  // First value in pixel. Stuff all of it.
       this.Pixels[x][y].pixcolor = new RGBColor(rgb.r, rgb.g, rgb.b);
-    } else {  // Already values in hex. Do a weighted average with the new value.
+    } else {  // Already values in pixel. Do a weighted average with the new value.
       this.Pixels[x][y].pixcolor = new RGBColor(
         (rgb.r + (this.Pixels[x][y].pixcolor.r*numdata))/(numdata+1),
         (rgb.g + (this.Pixels[x][y].pixcolor.g*numdata))/(numdata+1),
@@ -268,19 +267,25 @@ void setup() {
   initializeColorBuffers();  // Stuff with zeros (all black)
   
   // Image handling
-//  pixelarray = new PixelArray(pix_width, pix_height);
+  pixelarray = new PixelArray(pix_width, pix_height);
   
-//  movieFrame = createImage(FRAME_WIDTH, FRAME_HEIGHT, RGB);
+  movieFrame = createImage(FRAME_WIDTH, FRAME_HEIGHT, RGB);
   //movieFrame = createImage(MOVIE_SIZE, MOVIE_SIZE, RGB);
-//  movie_number = int(random(movie_titles.length));  // Initial movie
+  movie_number = int(random(movie_titles.length));  // Initial movie
   
   _server = new Server(this, port);
   println("server listening:" + _server);
 }
 
 void draw() {
+  if (VIDEO_STATE) {
+    DumpMovieIntoPixels();
+    movePixelsToBuffer();
+    pixelarray.EmptyAllPixels();
+  }
   pollServer();
   update_morph();
+    
   drawBigFrames();
   drawBottomControls();
 }
@@ -405,7 +410,7 @@ void drawBottomControls() {
   drawCheckbox(400,SCREEN_HEIGHT+10,20, color(255,255,255), COLOR_STATE == 0);
   
   drawCheckbox(480,SCREEN_HEIGHT+10,20, color(255,255,255), VIDEO_STATE); // Video
-  rect(600,SCREEN_HEIGHT+10,20,20);  // next gif box
+  rect(540,SCREEN_HEIGHT+10,20,20);  // next gif box
   
   
   // draw text labels in 12-point Helvetica
@@ -488,7 +493,7 @@ void mouseClicked() {
       myMovie.stop();
     }
    
-  } else if (mouseX > 600 && mouseX < 620 && mouseY > SCREEN_HEIGHT+10 && mouseY < SCREEN_HEIGHT+30) {
+  } else if (mouseX > 540 && mouseX < 560 && mouseY > SCREEN_HEIGHT+10 && mouseY < SCREEN_HEIGHT+30) {
     // clicked next gif button
     if (VIDEO_STATE) nextMovie();
    
@@ -502,7 +507,8 @@ Coord GetPixelCoord(int x, int y, int imageHeight, int imageWidth) {
   float sq_height = imageHeight / pix_height;
   float sq_width = imageWidth / pix_width;
   
-  return (new Coord((int)(x / sq_width), (int)(y / sq_height)));
+  // Need to flip y coordinate
+  return (new Coord((int)(x / sq_width), pix_width - (int)(y / sq_height) - 1));
 }
 
 // Get helper functions
@@ -836,6 +842,7 @@ Pattern cmd_pattern = Pattern.compile("^\\s*(\\d+),(\\d+),(\\d+),(\\d+),(\\d+)\\
 Pattern osc_pattern = Pattern.compile("^\\s*(\\w+),(\\w+),(\\d+)\\s*$");
 
 void processCommand(String cmd) {
+  if (VIDEO_STATE) return;  // Videos override python shows
   if (cmd.charAt(0) == 'X') {  // Finish the cycle
     finishCycle();
   } else if (cmd.charAt(0) == 'D') {  // Get the delay time
@@ -893,6 +900,7 @@ void finishCycle() {
 // Update Morph
 //
 void update_morph() {
+  if (VIDEO_STATE) return;
   if ((last_time - start_time) > delay_time) {
     return;  // Already finished all morphing - waiting for next command 
   }
@@ -952,6 +960,22 @@ void sendDataToLights() {
       }
     }
   }
+}
+
+void movePixelsToBuffer() {
+  
+  for (byte y = 0; y < pix_height; y++) {  // rows
+    for (byte x = 0; x < pix_width; x++) {  // columns
+      RGBColor rgb = pixelarray.GetPixelColor(x,y);
+      char r = (char)rgb.r;
+      char g = (char)rgb.g;
+      char b = (char)rgb.b;
+      
+      sendColorOut(x, y, r, g, b);  // Update individual light and simulator
+    }
+  }
+  sendDataToLights();  // Turn on all lights
+  squareGrid.draw();  // Update screen display
 }
 
 private void prepareExitHandler () {

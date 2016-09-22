@@ -1,31 +1,33 @@
 from HelperFunctions import*
-from triangle import*
+from square import*
         		
 class Dendron(object):
-	def __init__(self, trimodel, color, pos, dir, life):
-		self.tri = trimodel
+	def __init__(self, squaremodel, square_num, color, pos, dir, life, longevity):
+		self.square = squaremodel
+		self.square_num = square_num
 		self.color = color
 		self.pos = pos
 		self.dir = dir
 		self.life = life	# How long the branch has been around
+		self.squaremodel = squaremodel
+		self.longevity = longevity
 
 	def draw_dendron(self, inversion):
 		if inversion:
-			ratio = self.life/100.0 # dark center
+			ratio = self.life / float(self.longevity)	# dark center
 		else:
-			ratio = 1 - self.life/100.0 # light center
+			ratio = 1 - self.life / float(self.longevity)	# light center
 			
-		# color the 3 mirrored coordinates
-		self.tri.set_cells(self.tri.mirror_coords(self.pos),
-			gradient_wheel(self.color, ratio))
+		# color the 4 mirrored coordinates
+		self.square.set_cells(mirror_coords(self.pos), gradient_wheel(self.color, ratio))
 							
 		# Random chance that path changes
 		if oneIn(4):
 			self.dir = turn_left_or_right(self.dir)
 	
 	def move_dendron(self):			
-		newspot = tri_in_direction(self.pos, self.dir, 1)	# Where is the dendron going?
-		if self.tri.is_on_board(newspot) and self.life < 50:	# Is new spot off the board?
+		newspot = square_in_direction(self.pos, self.dir, 1)	# Where is the dendron going?
+		if self.square.is_on_square(self.square_num, newspot) and self.life < 50:	# Is new spot off the board?
 			self.pos = newspot	# On board. Update spot
 			self.life += 1
 			return True
@@ -34,13 +36,14 @@ class Dendron(object):
 
 				
 class Dendrons(object):
-	def __init__(self, trimodel):
-		self.name = "Dendrons"        
-		self.tri = trimodel
+	def __init__(self, squaremodel):
+		self.name = "Dendrons"
+		self.square = squaremodel
 		self.livedendrons = []	# List that holds Dendron objects
 		self.speed = 0.02
 		self.maincolor =  randColor()	# Main color of the show
 		self.inversion = randint(0,1)	# Toggle for effects
+		self.longevity = randint(20, 100)
 		          
 	def next_frame(self):
     	
@@ -49,11 +52,8 @@ class Dendrons(object):
 			# Randomly add a center dendron
 			
 			if len(self.livedendrons) < 20 and oneIn(5):
-				newdendron = Dendron(self.tri,
-						randColorRange(self.maincolor, 50), 	# color
-						choice(all_centers()), 	# center
-						maxDir,
-						0)					# Life = 0 (new branch)
+				sq = self.square.rand_square()
+				newdendron = Dendron(self.square, sq, randColorRange(self.maincolor, 50), choice(self.square.edges(sq)), maxDir, 0, self.longevity)
 				self.livedendrons.append(newdendron)
 				
 			for d in self.livedendrons:
@@ -62,14 +62,19 @@ class Dendrons(object):
 				# Chance for branching
 				if oneIn(20):	# Create a fork
 					newdir = turn_left_or_right(d.dir)
-					newdendron = Dendron(self.tri, d.color, d.pos, newdir, d.life)
+					newdendron = Dendron(self.square, sq, d.color, d.pos, newdir, d.life, d.longevity)
 					self.livedendrons.append(newdendron)
 					
 				if d.move_dendron() == False:	# dendron has moved off the board
 					self.livedendrons.remove(d)	# kill the branch
 
-			# Randomly change the main color
 			if oneIn(20):
 				self.maincolor = randColorRange(self.maincolor, 100)				
-			
+
+			if oneIn(100):
+				self.inversion = randint(0, 1)  # Toggle for effects
+
+			if oneIn(10):
+				self.longevity = upORdown(self.longevity, 1, 20, 100)
+
 			yield self.speed
