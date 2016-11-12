@@ -67,6 +67,46 @@ from copy import deepcopy
 
 __all__=['RGB', 'HSV', 'Hex', 'Color']
 
+def randColor(REDS=False):
+    "return a random, saturated hsv color"
+    if REDS:
+        return HSV(adj_value(0.1 + ((random() - 0.5) / 5)), 1.0, 1.0)
+    else:
+        return HSV(random(), 1.0, 1.0)
+
+def shiftColor(hsv, shift_range=0.3):
+    "shift the color randomly within the +/- range. Max range = 0.5"
+    if shift_range > 0.5:
+        shift_range = 0.5
+    new_h = (random() - 0.5) * shift_range * 2
+    return HSV(adj_value(hsv.h + new_h), hsv.s, hsv.v)
+
+def restrict_color(hsv, hue, hue_range=0.05):
+    "restrict a color with 0-1.0 starting hue to hue +/- range. Use this to set reds, blues, etc."
+
+    # red = 0.0
+    # orange = 0.083
+    # yellow = 0.17
+    # green = 0.29
+    # light blue = 0.5
+    # dark blue = 0.58
+    # blue purple = 0.66
+    # purple = 0.79
+    # red purple = 0.92
+
+    if hue_range > 0.5:
+        hue_range = 0.5
+    new_h = (hue - hue_range) + (hsv.h * 2 * hue_range)
+    return HSV(adj_value(new_h), hsv.s, hsv.v)
+
+def adj_value(value):
+    "keep value 0-1.0, folding values back if necessary"
+    while value > 1.0:
+        value -= 1.0
+    while value < 0.0:
+        value += 1.0
+    return value
+
 def clamp(val, min_value, max_value):
     "Restrict a value between a minimum and a maximum value"
     return max(min(val, max_value), min_value)
