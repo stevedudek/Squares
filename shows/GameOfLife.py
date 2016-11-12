@@ -8,7 +8,7 @@ class GameOfLife(object):
 	def __init__(self, squaremodel):
 		self.name = "GameOfLife"
 		self.square = squaremodel
-		self.speed = 0.1
+		self.speed = randint(2, 8) / 10.0
 		self.counter = 0
 		self.color = randColor()
 		self.cellmap = {}
@@ -30,7 +30,8 @@ class GameOfLife(object):
 
 			after_cells = [k for k,v in self.cellmap.iteritems() if v == True]
 
-			if self.counter % 400 == 0 or cmp(before_cells, after_cells) == 0:	# Have cells changed?
+			if self.counter % 400 == 0 or \
+					(len(before_cells) == len(after_cells) and len(before_cells) < 10 * self.square.squares):	# Have cells changed?
 				self.square.clear()
 				self.color = randColor()
 				for i in range(randint(self.min_start, self.max_start)):
@@ -40,8 +41,10 @@ class GameOfLife(object):
 			self.counter += 1
 			self.color += 25
 
+			if oneIn(200):
+				self.speed = upORdown(self.speed, 0.1, 0.2, 1.0)
 			
-			yield self.speed  	# random time set in init function
+			yield self.speed
 
 	def check_life(self):
 		snapshot = {k:v for k,v in self.cellmap.iteritems()}

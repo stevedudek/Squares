@@ -41,7 +41,7 @@ class Rings(object):
         self.name = "Rings"        
         self.square = squaremodel
         self.balls = []	# List that holds Balls objects
-        self.speed = 0.1
+        self.speed = 0.14
         self.maincolor =  randColor()
 		          
     def next_frame(self):

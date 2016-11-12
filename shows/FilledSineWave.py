@@ -10,7 +10,7 @@ class FilledSineWave(object):
 		self.color = randColor()
 		self.counter = 0
 		self.wave_speed = randint(1, 10)
-		self.wag_speed = randint(10, 50)
+		self.wag_speed = randint(40, 80)
 		self.decay = randint(1,10) / 20.0
 		self.color_x = randint(1,20)
 		self.color_y = randint(1, 20)

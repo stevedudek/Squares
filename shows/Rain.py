@@ -6,7 +6,7 @@ class Rain(object):
 		self.name = "Rain"
 		self.square = squaremodel
 		self.raindrops = Bricks(squaremodel)
-		self.speed = 0.02
+		self.speed = 0.04
 		self.blue = 1100
 		self.density = randint(2,10)
 		self.wind = 0

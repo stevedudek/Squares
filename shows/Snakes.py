@@ -80,7 +80,7 @@ class Snakes(object):
         self.snakemap = create_snake_model(squaremodel)
         self.nextSnakeID = 0
         self.livesnakes = {}  # Dictionary that holds Snake objects. Key is snakeID.
-        self.speed = randint(1, 5) / 10.0
+        self.speed = randint(1, 4) / 10.0
         self.maincolor = randColor()
         self.num_snakes = randint(1 * self.square.squares, 4 * self.square.squares)
 
@@ -106,19 +106,19 @@ class Snakes(object):
             for id, s in self.livesnakes.iteritems():
                 if s.alive:
 
-                    s.draw_snake()  # Draw the snake head
-
                     # Try to move the snake
                     nextpos = square_in_direction(s.pos, s.dir, 1)  # Get the coord of where the snake will go
                     if self.snakemap.is_open_square(nextpos):  # Is the new spot open?
                         s.pos = nextpos  # Yes, update snake position
                         self.snakemap.put_snake_value(s.pos, s.snakeID)  # Put snake on the virtual snake map
+                        s.draw_snake()  # Draw the snake head
                     else:
                         dirs = self.snakemap.get_valid_directions(s.pos)  # Blocked, check possible directions
                         if len(self.snakemap.get_open_spots(s.pos)) > 0:  # Are there other places to go?
                             s.dir = choice(dirs)  # Yes, pick a random new direction
                             s.pos = square_in_direction(s.pos, s.dir, 1)
                             self.snakemap.put_snake_value(s.pos, s.snakeID)
+                            s.draw_snake()  # Draw the snake head
                         else:  # No directions available
                             s.alive = False  # Kill the snake
                             self.snakemap.remove_snake_path(s.snakeID)  # Snake is killed

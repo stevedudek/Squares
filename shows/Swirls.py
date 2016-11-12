@@ -60,10 +60,10 @@ class Swirls(object):
 				if s.move_swirl() == False:	# Swirl has moved off the board
 					self.liveswirls.remove(s)	# kill the branch
 
-				if oneIn(20):
-					self.longevity = upORdown(self.longevity, 2, 40, 100)
+			if oneIn(20):
+				self.longevity = upORdown(self.longevity, 2, 40, 100)
 
-				if oneIn(40):
-					self.maincolor = randColorRange(self.maincolor, 30)
+			if oneIn(40):
+				self.maincolor = randColorRange(self.maincolor, 30)
 
 			yield self.speed

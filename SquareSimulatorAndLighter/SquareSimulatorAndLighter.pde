@@ -7,14 +7,10 @@
   Includes Tiling of
   Multiple Big Square Grids
   
-  9/22/16
+  10/23/16
   
   Main parameter is square PIXEL_WIDTH, or number of squares on the base
   PIXEL_WIDTH is fixed at 12 for 144 total squares.
-  
-  x,y coordinates are weird for each square, but selected to make
-  both neighbors and linear movement easier. Turn on the coordinates
-  to see the system.
   
   Number of Big Squares set by numBigSquare. Each Big Squares needs
   an (x,y) coordinate and a (Corner, L/R) connector designation. 
@@ -28,8 +24,8 @@ int numBigSquare = 4;  // Number of Big Squares
 int[][] BigSquareCoord = {
   {0,0},  // Square 1
   {1,0},  // Square 2
-  {0,1},  // Square 3
-  {1,1}  // Square 4
+  {2,0},  // Square 3
+  {3,0}   // Square 4
 };
 
 // Matrix listing where the connector attaches physically to each Big Square.
@@ -38,8 +34,8 @@ int[][] BigSquareCoord = {
 // Second value is Direction of lights (0->1) from connector as viewed from corner:
 // 'L' = Left, 'R' = Right
 char[][] connectors = {
-  {'Z','R'},  // Square 1
-  {'A','R'},  // Square 2
+  {'Z','L'},  // Square 1
+  {'Z','L'},  // Square 2
   {'A','L'},  // Square 3
   {'Z','L'}   // Square 4
 };
@@ -54,8 +50,8 @@ int[][] LED_LOOKUP = {
   {95, 94, 91, 90, 87, 86, 83, 82, 79, 78, 75, 73},  //  7
   {50, 52, 53, 56, 57, 60, 61, 64, 65, 68, 69, 72},  //  6
   {49, 51, 54, 55, 58, 59, 62, 63, 66, 67, 70, 71},  //  5
-  {48, 46, 43, 42, 39, 38, 35, 34, 31, 30, 27, 26},  //  4
-  {47, 45, 44, 41, 40, 37, 36, 33, 32, 29, 28, 25},  //  3
+  {48, 45, 44, 41, 40, 37, 36, 33, 32, 29, 28, 26},  //  4
+  {47, 46, 43, 42, 39, 38, 35, 34, 31, 30, 27, 25},  //  3
   {2, 4, 5, 8, 9, 12, 13, 16, 17, 20, 21, 24},  //  2
   {1, 3, 6, 7, 10, 11, 14, 15, 18, 19, 22, 23}   //  1
 };
@@ -121,7 +117,7 @@ char[][][] next_buffer = new char[pix_width][pix_height][3];
 char[][][] morph_buffer = new char[pix_width][pix_height][3];
 
 // Calculated pixel constants for simulator display
-int SCREEN_SIZE = 600;  // square screen
+int SCREEN_SIZE = 1200;  // square screen
 float SMALL_SIZE = (SCREEN_SIZE - 20) / (PIXEL_WIDTH * grid_width());  // Size of a small square
 int BIG_SIZE = (int)(PIXEL_WIDTH * SMALL_SIZE);  // Width of one big square
 int SCREEN_WIDTH = (int)(BIG_SIZE * grid_width()) + 20;  // Width + a little
@@ -148,7 +144,7 @@ int PIX_DENSITY = 10;  // How many screen-pixels wide is each little square
 int FRAME_WIDTH = pix_width * PIX_DENSITY;
 int FRAME_HEIGHT = pix_height * PIX_DENSITY;
 float[] movie_speeds = { 0.0, 0.2, 0.4, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0 };
-String[] movie_titles = { "penguin", "Earth", "banana", "bluedot", "nyancat" };
+String[] movie_titles = { "horse", "penguin", "Earth", "banana", "bluedot", "partyparrot", "nyancat" };
 
 //
 // Pixel Array routines
@@ -202,7 +198,6 @@ class PixelArray {
         Pixels[x][y] = new Pixel();
       }
     }
-    //BlackAllPixels();
   }
   
   boolean IsValidCoord(int x, int y) {
@@ -255,7 +250,7 @@ void setup() {
   stroke(0);
   fill(255,255,0);
   background(200);  // gray
-  frameRate(20); // default 60 seems excessive
+  frameRate(60); // default 60 seems excessive
   
   squareGrid = makeSquareGrid();  // Set up the Big Squares and stuff in the little squares
   
@@ -296,13 +291,14 @@ void DumpMovieIntoPixels() {
   // Iterate over background/main image pixel-by-pixel
   // For each pixel, determine the triangular coordinate
   // Width/height ratio is already properly scaled
-  for (int j = 0; j < movieFrame.height; j++) {
-    for (int i = 0; i < movieFrame.width; i++) {
-      Coord coord = GetPixelCoord(i, j, movieFrame.height, movieFrame.width);
-      if (!pixelarray.IsValidCoord(coord.x,coord.y)) continue;
+  
+  for (int y = 0; y < movieFrame.height; y++) {
+    for (int x = 0; x < movieFrame.width; x++) {
+      Coord coord = GetPixelCoord(x, y, movieFrame.height, movieFrame.width);
+      if (!pixelarray.IsValidCoord(coord.x,coord.y)) continue;  // not on the screen
       
       // Pull pixel location and color from picture
-      int imageloc = i + j*movieFrame.width;
+      int imageloc = x + (y * movieFrame.width);
       RGBColor rgb = new RGBColor(red(movieFrame.pixels[imageloc]),
                                  green(movieFrame.pixels[imageloc]),
                                 blue(movieFrame.pixels[imageloc]));
@@ -326,18 +322,20 @@ void movieEvent(Movie m) {
   */
   
   // Is the "m" movie too wide?
-  if ( (m.width/m.height) > (FRAME_WIDTH / FRAME_HEIGHT) ) {
+  // a "<=" will fill the frame, clipping the movie.
+  // a ">" will put the whole movie in the frame, leaving the rest of the space blank.
+  if ( (m.width/m.height) <= (FRAME_WIDTH / FRAME_HEIGHT) ) {
     int new_height = int(movieFrame.width * m.height / m.width);
     
     movieFrame.copy(m,0,0,m.width,m.height, // (src,sx,sy,sw,sh
-      0, (movieFrame.height-new_height)/2,  // dx,dy
+      0, (movieFrame.height-new_height) / 2,  // dx,dy
       movieFrame.width,new_height);         // dw,dh) 
 
   } else {  // No - make height the dominate value
     int new_width = int(movieFrame.height * m.width / m.height);
     
     movieFrame.copy(m,0,0,m.width,m.height, // (src,sx,sy,sw,sh
-      (movieFrame.width-new_width)/2, 0,    // dx,dy 
+      (movieFrame.width-new_width) / 2, 0,    // dx,dy 
       new_width,movieFrame.height);         // dw,dh)
   }
 }
@@ -345,7 +343,7 @@ void movieEvent(Movie m) {
 void turnOnMovie() {
   String movieName = movie_titles[movie_number] + ".mov";
   println("Starting " + movieName);
-  myMovie = new Movie(this, movieName);
+  myMovie = new Movie(this, movieName); 
   myMovie.loop();
 }
 
@@ -508,7 +506,7 @@ Coord GetPixelCoord(int x, int y, int imageHeight, int imageWidth) {
   float sq_width = imageWidth / pix_width;
   
   // Need to flip y coordinate
-  return (new Coord((int)(x / sq_width), pix_width - (int)(y / sq_height) - 1));
+  return (new Coord((int)(x / sq_width), pix_height - (int)(y / sq_height) - 1));
 }
 
 // Get helper functions
@@ -846,7 +844,7 @@ void processCommand(String cmd) {
   if (cmd.charAt(0) == 'X') {  // Finish the cycle
     finishCycle();
   } else if (cmd.charAt(0) == 'D') {  // Get the delay time
-    delay_time = Integer.valueOf(cmd.substring(1, cmd.length())) + 20;  // 20 is a buffer
+    delay_time = Integer.valueOf(cmd.substring(1, cmd.length())) + 10;  // 20 is a buffer
   } else {  
     processPixelCommand(cmd);  // Pixel command
   }
@@ -873,7 +871,7 @@ void processPixelCommand(String cmd) {
 //
 
 // Send a corrected color to a square pixel on screen and in lights
-void sendColorOut(byte x, byte y, char r, char g, char b) {
+void sendColorOut(byte x, byte y, char r, char g, char b, boolean morph) {
   if (squareGrid.squareExists(x,y) == false) return;
   
   color correct = colorCorrect(r,g,b);
@@ -883,7 +881,7 @@ void sendColorOut(byte x, byte y, char r, char g, char b) {
   b = (char)adj_brightness(blue(correct));
   
   squareGrid.setCellColor(color(r,g,b), x, y);  // Simulator
-  setPixelBuffer(x, y, r, g, b, true);  // Lights: sets next-frame buffer (doesn't turn them on)
+  setPixelBuffer(x, y, r, g, b, morph);  // Lights: sets next-frame buffer (doesn't turn them on)
 }
 
 //
@@ -900,7 +898,10 @@ void finishCycle() {
 // Update Morph
 //
 void update_morph() {
-  if (VIDEO_STATE) return;
+  if (VIDEO_STATE) {
+    morph_frame(0);
+    return;
+  }
   if ((last_time - start_time) > delay_time) {
     return;  // Already finished all morphing - waiting for next command 
   }
@@ -923,7 +924,7 @@ void morph_frame(float fract) {
         g = interp(curr_buffer[x][y][1], next_buffer[x][y][1], fract);
         b = interp(curr_buffer[x][y][2], next_buffer[x][y][2], fract);
         
-        sendColorOut(x, y, r, g, b);  // Update individual light and simulator
+        sendColorOut(x, y, r, g, b, true);  // Update individual light and simulator
       }
     }
   }
@@ -941,39 +942,42 @@ void sendDataToLights() {
     registry.setExtraDelay(0);
     registry.setAutoThrottle(true);
     registry.setAntiLog(true);    
-
-    byte counter = 0;
-    List<Strip> strip_list = registry.getStrips();
-    Strip[] strips = new Strip[numBigSquare];
-    for (Strip strip : strip_list) {
-      if (counter < numBigSquare && counter < strips.length) {
-        strips[counter] = strip;
-        counter++;
-      }
-    }
     
-    for (byte x = 0; x < pix_width; x++) {
-      for (byte y = 0; y < pix_height; y++) {
-        if (squareGrid.squareExists(x,y) && hasChanged(x,y)) {
-           strips[squareGrid.getStrip(x,y)].setPixel(getPixelBuffer(x,y), squareGrid.getLED(x,y));
+    int check_strip;
+    byte sq = 0;
+    
+    List<Strip> strips = registry.getStrips();
+    
+    for (Strip strip : strips) {
+      for (byte x = 0; x < pix_width; x++) {
+        for (byte y = 0; y < pix_height; y++) {
+          if (squareGrid.squareExists(x,y) && hasChanged(x,y)) {
+            check_strip = squareGrid.getStrip(x,y);
+            if (check_strip == sq) {
+              strip.setPixel(getPixelBuffer(x,y), squareGrid.getLED(x,y));
+            }
+          }
         }
       }
+    sq++;
+    if (sq >=numBigSquare) break;  // Prevents buffer overflow 
     }
   }
 }
 
 void movePixelsToBuffer() {
   
-  for (byte y = 0; y < pix_height; y++) {  // rows
-    for (byte x = 0; x < pix_width; x++) {  // columns
+  for (byte y = 0; y < pix_height; y++) {
+    for (byte x = 0; x < pix_width; x++) {
       RGBColor rgb = pixelarray.GetPixelColor(x,y);
       char r = (char)rgb.r;
       char g = (char)rgb.g;
       char b = (char)rgb.b;
       
-      sendColorOut(x, y, r, g, b);  // Update individual light and simulator
+      sendColorOut(x, y, r, g, b, false);  // Update individual light and simulator
     }
   }
+  finishCycle();
   sendDataToLights();  // Turn on all lights
   squareGrid.draw();  // Update screen display
 }

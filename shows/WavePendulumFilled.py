@@ -11,9 +11,8 @@ class WavePendulumFilled(object):
 		self.min_freq = 10	# fastest pendulum does this many cycles in one loop
 		self.cycle_time = 5	# speed of one cycle
 		self.cycles = int(self.cycle_time / self.speed)
-		self.gradient = 3
+		self.gradient = 10
 		self.up_down = True
-
 		          
 	def next_frame(self):
 
@@ -35,7 +34,7 @@ class WavePendulumFilled(object):
 			self.counter += 1
 			if self.counter % (int(2 * pi * self.cycles)) == 0:
 				self.min_freq = upORdown(self.min_freq, 1, 3, 10)
-				self.gradient = upORdown(self.gradient, 1, 0, 10)
+				self.gradient = upORdown(self.gradient, 2, 5, 15)
 				self.color = randColorRange(self.color, 10)
 				self.up_down = not self.up_down
 

@@ -72,8 +72,8 @@ class WavePendulum(object):
 			if self.counter % (int(2 * pi * self.cycles)) == 0:
 				self.min_freq = upORdown(self.min_freq, 1, 3, 10)
 				self.gradient = upORdown(self.gradient, 1, 0, 10)
-				self.color = randColorRange(self.color, 10)
-				self.background = randColorRange(self.background, 10)
+				self.color = changeColor(self.color, 200)
+				self.background = randColorRange(self.background, 20)
 
 
 			yield self.speed  	# random time set in init function

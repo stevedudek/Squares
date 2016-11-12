@@ -27,7 +27,7 @@ class Branches(object):
 		self.name = "Branches"        
 		self.square = squaremodel
 		self.livebranches = []	# List that holds Branch objects
-		self.speed = 0.02
+		self.speed = 0.05
 		self.maincolor =  randColor()	# Main color of the show
 		self.maindir = randDir() # Random initial main direction
 		          

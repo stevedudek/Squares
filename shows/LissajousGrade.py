@@ -10,8 +10,8 @@ class LissajousGrade(object):
 		self.color = randColor()
 		(self.a, self.b) = choice([(1, 2), (3, 2), (5, 4), (1.5, 0), (3, pi / 2)])
 		self.full_cycle = 3 * 2 * pi
-		self.repeat = 2
-		self.grade = 10
+		self.repeat = choice([1, 2, 3, 4, 6, 8])
+		self.grade = randint(3,10)
 		          
 	def next_frame(self):
 
@@ -21,10 +21,10 @@ class LissajousGrade(object):
 				for y in range(self.square.height):
 					self.square.set_cell((x, y), gradient_wheel(self.color, max([self.calc_intense((x,y), self.get_lj_coord(j)) for j in range(self.repeat)])))
 
-			self.counter += 0.1
+			self.counter += 0.05
 			if self.counter > self.full_cycle:
 				self.counter -= self.full_cycle
-				self.trail_length = randint(10,200)
+				self.trail_length = randint(10, 200)
 				(self.a, self.b) = choice([(1,1), (1,2), (3,2), (5,4), (3, pi/2)])
 				self.color = randColorRange(self.color, 10)
 				self.repeat = choice([1, 2, 3, 4, 6, 8])
@@ -32,7 +32,7 @@ class LissajousGrade(object):
 			self.color = randColorRange(self.color, 20)
 
 			if oneIn(100):
-				self.grade = upORdown(self.grade, 2, 5, 20)
+				self.grade = upORdown(self.grade, 1, 3, 10)
 
 			yield self.speed  	# random time set in init function
 

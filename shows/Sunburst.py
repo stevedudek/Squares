@@ -8,7 +8,7 @@ class Sunburst(object):
 		self.bricks = Bricks(squaremodel, bounce=False)
 		self.speed = 0.2
 		self.color = randColor()
-		self.density = randint(2, 5)
+		self.density = randint(1, 4)
 		self.syms = [2, 3, 4, 5, 6, 8, 10, 12]
 		self.sym = randint(0, len(self.syms) - 1)
 
@@ -27,13 +27,13 @@ class Sunburst(object):
 				for i in range(symmetry):
 					rad = 2 * 3.14159 * (angle + (i * 360 / symmetry)) / 360
 					self.bricks.add_brick(wheel(self.color), life=life, pos=(self.square.width // 2, self.square.height // 2),
-										  length=0, pitch=1, length_x=0, length_y=0,
-										  dx=sin(rad), dy=cos(rad), accel_x=0, accel_y=0, use_faders=True, change=change)
+										  length=randint(1,4), pitch=1, length_x=sin(rad), length_y=cos(rad),
+										  dx=sin(rad), dy=cos(rad), accel_x=0, accel_y=0, use_faders=False, change=change)
 
 				self.color = randColorRange(self.color, 200)
 
 			if oneIn(40):
-				self.density = upORdown(self.density, 1, 2, 5)
+				self.density = upORdown(self.density, 1, 1, 4)
 
 			if oneIn(100):
 				self.sym = upORdown(self.sym, 1, 0, len(self.syms) - 1)

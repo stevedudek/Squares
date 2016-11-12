@@ -1,19 +1,15 @@
 from HelperFunctions import*
 from math import sin, cos, pi
 
-class FilledSineWave(object):
+class SinCosTwoD(object):
 	def __init__(self, squaremodel):
-		self.name = "FilledSineWave"
+		self.name = "SinCosTwoD"
 		self.square = squaremodel
-		self.sparkles = []  # List that holds Sparkle objects
-		self.speed = 0.1
+		self.speed = 0.15
 		self.color = randColor()
 		self.counter = 0
-		self.wave_speed = randint(1, 10)
+		self.repeat = randint(1,4)
 		self.wag_speed = randint(10, 50)
-		self.decay = randint(1,10) / 20.0
-		self.color_x = randint(1,20)
-		self.color_y = randint(1, 20)
 
 		          
 	def next_frame(self):
@@ -21,29 +17,25 @@ class FilledSineWave(object):
 		self.square.clear()
 
 		while (True):
-			self.square.black_cells()
+			waggle = sin(2 * pi * self.get_fract(self.counter, self.wag_speed))  # Up and Down motion results = -1 to +1
 
 			for x in range(self.square.width):
-				waggle = sin(2 * pi * self.get_fract(self.counter, self.wag_speed))  # Up and Down motion results = -1 to +1
-				angle = 2 * pi * self.get_fract(x + (self.counter * (self.wave_speed / 10.0)), self.square.width)
-				y_top = (sin(angle) * waggle + 0.9) * self.square.height / 2 # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
-
 				for y in range(self.square.height):
-					if y <= y_top:
-						self.square.set_cell((x,y), wheel(self.color + (self.color_x * x) + (self.color_y * y)))
+					intensity = sin(float(x) / self.repeat) * cos(float(y) / self.repeat)	# -1 to 1
+
+					spread = (0.25 + (intensity * waggle)) / 2	 # (-1 to 1) * (-1 to 1) + 1 = 0 to 2 / 2 = 0 to 1
+
+					self.square.set_cell((x, y), gradient_wheel(self.color, spread))
+
+			if waggle == 0 and oneIn(10):
+				self.repeat = upORdown(self.repeat, 1, 1, 4)
 
 			# Change the colors
 			if oneIn(10):
 				self.color = randColorRange(self.color, 10)
 
-			if oneIn(10):
-				self.color_x = upORdown(self.color_x, 1, 1, 30)
-
-			if oneIn(10):
-				self.color_y = upORdown(self.color_y, 1, 1, 30)
-
-			self.counter -= 1
-			yield self.speed  	# random time set in init function
+			self.counter += 1
+			yield self.speed
 
 	def get_fract(self, var, max_var):
 		"""Return 0 - 1.0 the fraction a var is to max_var"""

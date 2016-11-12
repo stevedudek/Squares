@@ -3,6 +3,7 @@ Model to communicate with a Square simulator over a TCP socket
 
 """
 import socket
+from color import restrict_color
 
 # "off" color for simulator
 SIM_DEFAULT = (188,210,229) # BCD2E5
@@ -62,6 +63,15 @@ class SimulatorModel(object):
         self.sock.send(msg)
         self.sock.send('\n')
 
+    # def morph(self, fract):
+    #     "send a morph amount, a fract/max_steps (see go.py)"
+    #     msg = "M%s" % (str(int(fract)))
+    #
+    #     if self.debug:
+    #         print msg
+    #     self.sock.send(msg)
+    #     self.sock.send('\n')
+
     def send_delay(self, delay):
         "send a morph amount in milliseconds"
         msg = "D%s" % (str(int(delay * 1000)))
@@ -90,3 +100,9 @@ class SimulatorModel(object):
         if value < 0: value = 0
         if value > 255: value = 255
         return value
+
+    def translate_color(self, color):
+        """Convert the hsv color object into rgb"""
+        corrected = restrict_color(color, -0.05, 0.15) # RED clipping happens here
+        #corrected = color
+        return (corrected.r, corrected.g, corrected.b)

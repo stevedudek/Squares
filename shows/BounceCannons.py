@@ -22,9 +22,9 @@ class BounceCannons(object):
 				color = self.color1 if L_cannon else self.color2
 				x_range = randint(10, 20) / 50.0
 				dy = 0.45 - abs(x_range)
-				self.bricks.add_brick(wheel(randColorRange(color, 100)), life=1000,
+				self.bricks.add_brick(randColorRange(color, 100), life=1000,
 									  pos=(0 if L_cannon else (self.square.width-1), 0),
-									  length=0, pitch=1, length_x=0, length_y=0,
+									  length=1, pitch=1, length_x=0, length_y=0,
 									  dx=x_range if L_cannon else -x_range, dy=dy,
 									  accel_x=0, accel_y=0, use_faders=True, change=0.4)
 

@@ -37,7 +37,7 @@ class CenterBranches(object):
 		self.name = "Center Branches"        
 		self.square = squaremodel
 		self.livebranches = []	# List that holds Branch objects
-		self.speed = 0.05
+		self.speed = 0.03
 		self.maincolor =  randColor()	# Main color of the show
 		self.inversion = randint(0,1)	# Toggle for effects
 		self.fork = randint(5,30)
