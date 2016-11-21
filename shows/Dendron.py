@@ -1,5 +1,6 @@
 from HelperFunctions import*
 from square import*
+from color import randColor, randColorRange
         		
 class Dendron(object):
 	def __init__(self, squaremodel, square_num, color, pos, dir, life, longevity):
@@ -53,7 +54,7 @@ class Dendrons(object):
 			
 			if len(self.livedendrons) < 20 and oneIn(5):
 				sq = self.square.rand_square()
-				newdendron = Dendron(self.square, sq, randColorRange(self.maincolor, 50), choice(self.square.edges(sq)), maxDir, 0, self.longevity)
+				newdendron = Dendron(self.square, sq, randColorRange(self.maincolor, 0.03), choice(self.square.edges(sq)), maxDir, 0, self.longevity)
 				self.livedendrons.append(newdendron)
 				
 			for d in self.livedendrons:
@@ -69,7 +70,7 @@ class Dendrons(object):
 					self.livedendrons.remove(d)	# kill the branch
 
 			if oneIn(20):
-				self.maincolor = randColorRange(self.maincolor, 100)				
+				self.maincolor = randColorRange(self.maincolor, 0.05)
 
 			if oneIn(100):
 				self.inversion = randint(0, 1)  # Toggle for effects

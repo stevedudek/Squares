@@ -1,10 +1,11 @@
 from HelperFunctions import*
 from square import*
+from color import randColor, randColorRange
 
 class Ball(object):
 	def __init__(self, squaremodel, maincolor):
 		self.square = squaremodel
-		self.color = randColorRange(maincolor, 100)
+		self.color = randColorRange(maincolor, 0.1)
 		self.pos = self.square.rand_cell()
 		self.size = randint(5,8)	# Random ball size
 		self.dir = randDir()		# Direction of ball's travel
@@ -55,7 +56,7 @@ class Rings(object):
 				self.balls.append(newball)
 			
 			# Black the screen
-			self.square.set_all_cells([0,0,0])
+			self.square.black_cells()
 			
 			# Draw all the balls
 			# Increase the size of each drop - kill a drop if at full size

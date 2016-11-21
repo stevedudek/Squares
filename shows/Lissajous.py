@@ -1,11 +1,13 @@
 from HelperFunctions import*
 from math import sin, cos, pi
+from color import randColor, randColorRange
+from random import choice
 
 class Lissajous(object):
 	def __init__(self, squaremodel):
 		self.name = "Lissajous"
 		self.square = squaremodel
-		self.speed = 0.1
+		self.speed = 0.2
 		self.counter = 0
 		self.color = randColor()
 		(self.a, self.b) = choice([(1, 2), (3, 2), (5, 4), (1.5, 0), (3, pi / 2)])
@@ -33,7 +35,7 @@ class Lissajous(object):
 					x = int((x_angle + 1) * self.square.width / 2)
 					y = int((y_angle + 1) * self.square.height / 2)
 
-					self.square.set_cell((x, y), gradient_wheel(self.color + (self.counter * 20), intense))
+					self.square.set_cell((x, y), gradient_wheel(self.color, intense))
 
 			self.counter += 0.1
 			if self.counter > self.full_cycle:
@@ -43,6 +45,6 @@ class Lissajous(object):
 				self.color = randColorRange(self.color, 10)
 				self.repeat = choice([1, 2, 3, 4, 6, 8])
 
-			self.color = randColorRange(self.color, 20)
+			self.color = randColorRange(self.color, 0.01)
 
 			yield self.speed

@@ -1,4 +1,5 @@
 from HelperFunctions import*
+from color import randColor, randColorRange, changeColor
 from math import sin, cos, pi
 
 class FilledSineWave(object):
@@ -12,7 +13,7 @@ class FilledSineWave(object):
 		self.wave_speed = randint(1, 10)
 		self.wag_speed = randint(40, 80)
 		self.decay = randint(1,10) / 20.0
-		self.color_x = randint(1,20)
+		self.color_x = randint(1, 20)
 		self.color_y = randint(1, 20)
 
 		          
@@ -30,11 +31,11 @@ class FilledSineWave(object):
 
 				for y in range(self.square.height):
 					if y <= y_top:
-						self.square.set_cell((x,y), wheel(self.color + (self.color_x * x) + (self.color_y * y)))
+						self.square.set_cell((x,y), changeColor(self.color, (self.color_x * x / 1000.0) + (self.color_y * y / 1000.0)))
 
 			# Change the colors
 			if oneIn(10):
-				self.color = randColorRange(self.color, 10)
+				self.color = randColorRange(self.color, 0.005)
 
 			if oneIn(10):
 				self.color_x = upORdown(self.color_x, 1, 1, 30)

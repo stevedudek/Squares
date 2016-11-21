@@ -41,9 +41,10 @@ class SimulatorModel(object):
     def go(self):
         "Send all of the buffered commands"
         self.send_start()
+
         for (cell, color) in self.dirty.items():
             (x,y) = cell
-            (r,g,b) = self.constrain_color(color)
+            (r,g,b) = self.translate_color(color)
             
             msg = "%s,%s,%s,%s,%s" % (x,y,r,g,b)
             
@@ -63,15 +64,6 @@ class SimulatorModel(object):
         self.sock.send(msg)
         self.sock.send('\n')
 
-    # def morph(self, fract):
-    #     "send a morph amount, a fract/max_steps (see go.py)"
-    #     msg = "M%s" % (str(int(fract)))
-    #
-    #     if self.debug:
-    #         print msg
-    #     self.sock.send(msg)
-    #     self.sock.send('\n')
-
     def send_delay(self, delay):
         "send a morph amount in milliseconds"
         msg = "D%s" % (str(int(delay * 1000)))
@@ -90,19 +82,8 @@ class SimulatorModel(object):
         self.sock.send(msg)
         self.sock.send('\n')
 
-    def constrain_color(self, color):
-        (r,g,b) = color
-        return (self.constrain(r), self.constrain(g), self.constrain(b))
-
-    def constrain(self, value):
-        "Keep color values between 0-255 and make whole numbers"
-        value = int(value)
-        if value < 0: value = 0
-        if value > 255: value = 255
-        return value
-
     def translate_color(self, color):
         """Convert the hsv color object into rgb"""
-        corrected = restrict_color(color, -0.05, 0.15) # RED clipping happens here
-        #corrected = color
+        # corrected = restrict_color(color, -0.05, 0.15) # RED clipping happens here
+        corrected = color
         return (corrected.r, corrected.g, corrected.b)

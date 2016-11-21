@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from math import sin, cos, pi
+from color import randColor, randColorRange
 
 class Cannons(object):
 	def __init__(self, squaremodel):
@@ -22,7 +22,7 @@ class Cannons(object):
 					x_range = randint(-100, 100) / 100.0
 					dy = 1.2 - abs(x_range)
 					x_pos = (cannon + 1) * self.square.width // 4
-					self.bricks.add_brick(randColorRange(self.color, 200), life=100, pos=(x_pos, 0),
+					self.bricks.add_brick(randColorRange(self.color, 0.15), life=100, pos=(x_pos, 0),
 										  length=0, pitch=1, length_x=0, length_y=0, dx=x_range, dy=dy,
 										  accel_x=0, accel_y=-0.04, use_faders=True, change=(self.trail / 20.0))
 
@@ -30,7 +30,7 @@ class Cannons(object):
 
 			# Change the colors
 			if oneIn(10):
-				self.color = randColorRange(self.color, 10)
+				self.color = randColorRange(self.color, 0.005)
 
 			if oneIn(100):
 				self.density = upORdown(self.density, 1, 6, 20)

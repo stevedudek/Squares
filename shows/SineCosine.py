@@ -1,5 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
+from color import randColor, randColorRange, changeColor
 
 class SineCosine(object):
 	def __init__(self, squaremodel):
@@ -30,24 +31,24 @@ class SineCosine(object):
 			for x in range(self.square.width):
 
 				sin_angle = self.freq1 * pi * self.get_fract(x + (self.counter * (self.wave_speed / 6.0)), self.square.width)
-				y_sin_top = (sin(sin_angle) + 0.9) * self.square.height / 2 # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
+				y_sin_top = (sin(sin_angle) + 1.0) * self.square.height / 2 # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
 
 				cos_angle = self.freq2 * pi * self.get_fract(x - (self.counter * (self.wave_speed / 3.0)), self.square.width)
-				y_cos_top = (sin(cos_angle) + 0.9) * self.square.height / 2  # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
+				y_cos_top = (sin(cos_angle) + 1.0) * self.square.height / 2  # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
 
 				for y in range(self.square.height):
 					if y <= y_sin_top:
-						self.square.set_cell((x, y), wheel(self.color1 + (self.color_x * x) + (self.color_y * y)))
+						self.square.set_cell((x, y), changeColor(self.color1, (self.color_x * x / 1500.0) + (self.color_y * y / 1500.0)))
 
 					if y <= y_cos_top:
-						self.square.set_cell((x, y), wheel(self.color2 + (self.color_x * y) + (self.color_y * x)))
+						self.square.set_cell((x, y), changeColor(self.color2, (self.color_x * y / 1500.0) + (self.color_y * x / 1500.0)))
 
 			# Change the colors
 			if oneIn(10):
-				self.color1 = randColorRange(self.color1, 10)
+				self.color1 = randColorRange(self.color1, 0.007)
 
 			if oneIn(2):
-				self.color2 = randColorRange(self.color2, 10)
+				self.color2 = randColorRange(self.color2, 0.007)
 
 			if oneIn(10):
 				self.color_x = upORdown(self.color_x, 1, 1, 30)

@@ -1,45 +1,19 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-
-class Sparkle(object):
-	def __init__(self, squaremodel, color, pos, intense=0, growing=True, decrease=0.25):
-		self.square = squaremodel
-		self.pos = pos
-		self.color = color
-		self.intense = intense
-		self.growing = growing
-		self.decrease = decrease
-
-	def draw_sparkle(self):
-		self.square.set_cell(self.pos, gradient_wheel(self.color, self.intense))
-
-	def dark_sparkle(self):
-		self.square.set_cell(self.pos, (0, 0, 0))
-
-	def fade_sparkle(self):
-		if oneIn(3):
-			if self.growing == True:
-				self.intense += self.decrease
-				if self.intense >= 1.0:
-					self.intense = 1
-					self.growing = False
-				return True
-			else:
-				self.intense -= self.decrease
-				return self.intense > 0
+from color import randColor, randColorRange
 
 class Packets(object):
 	def __init__(self, squaremodel):
 		self.name = "Packets"
 		self.square = squaremodel
-		self.sparkles = []  # List that holds Sparkle objects
+		self.sparkles = Faders(squaremodel)
 		self.speed = 0.1
 		self.color = randColor()
 		self.counter = 0
 		self.wave_speed = randint(1, 10)
 		self.wag_speed = randint(10, 50)
-		self.decay = randint(1,10) / 20.0
-		self.color_x = randint(1,20)
+		self.decay = randint(5,10) / 40.0
+		self.color_x = randint(1, 20)
 		self.color_y = randint(1, 20)
 
 		          
@@ -60,21 +34,14 @@ class Packets(object):
 
 				for y in range(self.square.height):
 					if y_bottom <= y <= y_top:
-						color = self.color + (self.color_x * x) + (self.color_y * y)
+						color = randColorRange(self.color, (self.color_x * x / 3000.0) + (self.color_y * y / 3000.0))
+						self.sparkles.add_fader(color, (x, y + y_off), intense=1.0, growing=False, change=self.decay)
 
-						new_sparkle = Sparkle(self.square, color, (x, y + y_off), 1.0, False, self.decay)
-						self.sparkles.append(new_sparkle)
-
-			# Draw the sparkles
-			for s in self.sparkles:
-				s.draw_sparkle()
-				if s.fade_sparkle() == False:
-					s.dark_sparkle()
-					self.sparkles.remove(s)
+			self.sparkles.cycle_faders()
 
 			# Change the colors
 			if oneIn(10):
-				self.color = randColorRange(self.color, 10)
+				self.color = randColorRange(self.color, 0.007)
 
 			if oneIn(10):
 				self.color_x = upORdown(self.color_x, 2, 1, 30)

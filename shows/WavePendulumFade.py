@@ -1,5 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
+from color import randColor, randColorRange, changeColor
 
 class WavePendulumFade(object):
 	def __init__(self, squaremodel):
@@ -25,14 +26,14 @@ class WavePendulumFade(object):
 				w = (self.min_freq + y) / float(self.cycles) # pendulum frequency
 				x = int((cos(w * self.counter) + 1) * self.square.width / 2)
 
-				self.faders.add_fader(self.color + (y * self.gradient), (x,y), intense=1.0, growing=False, change=0.2)
+				self.faders.add_fader(changeColor(self.color, y * self.gradient / 1500.0), (x,y), intense=1.0, growing=False, change=0.05)
 
 			self.faders.cycle_faders()
 
 			self.counter += 1
 
 			if self.counter % (int(2 * pi * self.cycles)) == 0:
-				self.color = randColorRange(self.color, 200)
+				self.color = randColorRange(self.color, 0.15)
 				self.gradient = upORdown(self.gradient, 5, 15, 40)
 
 			yield self.speed  	# random time set in init function

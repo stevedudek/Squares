@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from math import sin, cos, pi
+from color import randColor, randColorRange
 
 class Snowglobe2(object):
 	def __init__(self, squaremodel):
@@ -17,7 +17,7 @@ class Snowglobe2(object):
 		self.square.clear()
 
 		for i in range(self.num_bricks):
-			self.bricks.add_brick(wheel(randColorRange(self.color, 200)), life=100000, pos=(self.square.rand_cell()),
+			self.bricks.add_brick(randColorRange(self.color, 0.1), life=100000, pos=(self.square.rand_cell()),
 							  length=self.brick_length, pitch=1, length_x=0, length_y=1, dx=0, dy=0, accel_y=-0.1)
 
 		while (True):

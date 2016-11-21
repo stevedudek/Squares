@@ -1,5 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
+from color import randColor, randColorRange
 
 class SinCosTwoD(object):
 	def __init__(self, squaremodel):
@@ -32,7 +33,7 @@ class SinCosTwoD(object):
 
 			# Change the colors
 			if oneIn(10):
-				self.color = randColorRange(self.color, 10)
+				self.color = randColorRange(self.color, 0.007)
 
 			self.counter += 1
 			yield self.speed

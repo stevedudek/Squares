@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from math import sin, cos, pi
+from color import randColor, randColorRange
 
 class Intersection(object):
 	def __init__(self, squaremodel):
@@ -34,22 +34,22 @@ class Intersection(object):
 					i = 2 if side else 3
 
 				if i == 0:	# left
-					self.bricks.add_brick(wheel(randColorRange(color, brick_length * 10)),
+					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
 										  life=20 + (self.square.width / self.brick_speed[i]),
 										  pos=(-brick_length, randint(0, self.square.height)),
 										  length=brick_length, pitch=1, length_x=1, length_y=0, dx=self.brick_speed[i], dy=0)
 				elif i == 1:	# right
-					self.bricks.add_brick(wheel(randColorRange(color, brick_length * 10)),
+					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
 										  life=20 + (self.square.width / self.brick_speed[i]),
 										  pos=(self.square.width, randint(0, self.square.height)),
 										  length=brick_length, pitch=1, length_x=1, length_y=0, dx=-self.brick_speed[i], dy=0)
 				elif i == 2:	# bottom
-					self.bricks.add_brick(wheel(randColorRange(color, brick_length * 10)),
+					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
 										  life=20 + (self.square.width / self.brick_speed[i]),
 										  pos=(randint(0, self.square.width), -brick_length),
 										  length=brick_length, pitch=1, length_x=0, length_y=1, dx=0, dy=self.brick_speed[i])
 				else:	# top
-					self.bricks.add_brick(wheel(randColorRange(color, brick_length * 10)),
+					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
 										  life=20 + (self.square.width / self.brick_speed[i]),
 										  pos=(randint(0, self.square.width), self.square.height),
 										  length=brick_length, pitch=1, length_x=0, length_y=1, dx=0, dy=-self.brick_speed[i])
@@ -58,10 +58,10 @@ class Intersection(object):
 
 			# Change the colors
 			if oneIn(20):
-				self.color1 = randColorRange(self.color1, 50)
+				self.color1 = randColorRange(self.color1, 0.03)
 
 			if oneIn(10):
-				self.color1 = randColorRange(self.color1, 20)
+				self.color1 = randColorRange(self.color1, 0.01)
 
 			if oneIn(100):
 				self.density = upORdown(self.density, 1, 1, 4)

@@ -1,4 +1,5 @@
 from HelperFunctions import*
+from color import randColor, randColorRange
 from math import sin, cos, pi
 
 
@@ -18,7 +19,7 @@ class Grass(object):
 			for d in range(self.density):
 				y = l + (float(d) / self.density)
 				x = (self.a * (y*y)) + (self.b * y) + self.c
-				self.square.set_cell((round(x), round(y)), wheel(self.color))
+				self.square.set_cell((round(x), round(y)), self.color)
 
 	def adj_bend(self, wind):
 		new_a = self.a + (wind * self.bendy)
@@ -44,12 +45,12 @@ class Grasses(object):
 
 		for i in range(self.num_grass):
 
-			new_grass = Grass(self.square, randColorRange(self.color, 100))
+			new_grass = Grass(self.square, randColorRange(self.color, 0.06))
 			self.grasses.append(new_grass)
 
 		while (True):
 
-			self.square.set_all_cells([0, 0, 0])
+			self.square.black_cells()
 
 			self.wind = self.max_wind * sin(2 * pi * self.counter / 60)
 

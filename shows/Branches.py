@@ -1,5 +1,6 @@
 from HelperFunctions import*
 from square import*
+from color import randColor, randColorRange, changeColor
         		
 class Branch(object):
 	def __init__(self, squaremodel, square_num, color, pos, dir, life):
@@ -39,7 +40,7 @@ class Branches(object):
 			# If no branches, add one. If branches < 10, add more branches randomly
 			while len(self.livebranches) < 10 or oneIn(10):
 				sq = self.square.rand_square()	# Pick a random Square
-				newbranch = Branch(self.square, sq, randColorRange(self.maincolor, 30), choice(self.square.edges(sq)), self.maindir, 0)
+				newbranch = Branch(self.square, sq, randColorRange(self.maincolor, 0.02), choice(self.square.edges(sq)), self.maindir, 0)
 				self.livebranches.append(newbranch)
 				
 			for b in self.livebranches:
@@ -48,7 +49,7 @@ class Branches(object):
 				# Chance for branching
 				if oneIn(5):	# Create a fork
 					new_dir = turn_left_or_right(b.dir)
-					new_branch = Branch(self.square, b.square_num, b.color + 50, b.pos, new_dir, b.life)
+					new_branch = Branch(self.square, b.square_num, changeColor(b.color, 0.03), b.pos, new_dir, b.life)
 					self.livebranches.append(new_branch)
 					
 				if b.move_branch() == False:	# branch has moved off the board

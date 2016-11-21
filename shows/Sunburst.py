@@ -1,5 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
+from color import randColor, randColorRange
 
 class Sunburst(object):
 	def __init__(self, squaremodel):
@@ -26,11 +27,11 @@ class Sunburst(object):
 
 				for i in range(symmetry):
 					rad = 2 * 3.14159 * (angle + (i * 360 / symmetry)) / 360
-					self.bricks.add_brick(wheel(self.color), life=life, pos=(self.square.width // 2, self.square.height // 2),
+					self.bricks.add_brick(self.color, life=life, pos=(self.square.width // 2, self.square.height // 2),
 										  length=randint(1,4), pitch=1, length_x=sin(rad), length_y=cos(rad),
 										  dx=sin(rad), dy=cos(rad), accel_x=0, accel_y=0, use_faders=False, change=change)
 
-				self.color = randColorRange(self.color, 200)
+				self.color = randColorRange(self.color, 0.1)
 
 			if oneIn(40):
 				self.density = upORdown(self.density, 1, 1, 4)
@@ -40,4 +41,4 @@ class Sunburst(object):
 
 			self.bricks.move_bricks()
 
-			yield self.speed  	# random time set in init function
+			yield self.speed

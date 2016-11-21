@@ -1,5 +1,5 @@
-from random import random, randint, choice
-from copy import deepcopy
+from random import choice
+from color import randColor, changeColor
 
 from HelperFunctions import*
 from square import touch_neighbors
@@ -39,7 +39,7 @@ class GameOfLife(object):
 				yield self.speed
 
 			self.counter += 1
-			self.color += 25
+			self.color = changeColor(self.color, 0.02)
 
 			if oneIn(200):
 				self.speed = upORdown(self.speed, 0.1, 0.2, 1.0)
@@ -61,11 +61,11 @@ class GameOfLife(object):
 				self.light_square(coord)
 
 	def light_square(self, coord):
-		self.square.set_cell(coord, wheel(self.color))
+		self.square.set_cell(coord, self.color)
 		self.cellmap[coord] = True
 
 	def kill_square(self, coord):
-		self.square.set_cell(coord, (0,0,0))
+		self.square.black_cell(coord)
 		self.cellmap[coord] = False
 
 	def wrap(self, coord):

@@ -1,6 +1,7 @@
+from color import randColor, randColorRange
 from HelperFunctions import*
 from square import*
-        		
+
 class Branch(object):
 	def __init__(self, squaremodel, square_num, color, pos, dir, life, decay):
 		self.square = squaremodel
@@ -38,7 +39,7 @@ class CenterBranches(object):
 		self.square = squaremodel
 		self.livebranches = []	# List that holds Branch objects
 		self.speed = 0.03
-		self.maincolor =  randColor()	# Main color of the show
+		self.maincolor = randColor()
 		self.inversion = randint(0,1)	# Toggle for effects
 		self.fork = randint(5,30)
 		self.decay = randint(4,20)
@@ -73,7 +74,7 @@ class CenterBranches(object):
 				self.fork = upORdown(self.fork, 1, 5, 30)
 
 			if oneIn(20):
-				self.maincolor = randColorRange(self.maincolor, 50)
+				self.maincolor = randColorRange(self.maincolor, 0.05)
 
 			if oneIn(500):
 				self.inversion = randint(0, 1)  # Toggle for effects

@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from math import sin, cos, pi
+from color import randColor, changeColor
 
 class RegularBouncers(object):
 	def __init__(self, squaremodel):
@@ -19,7 +19,7 @@ class RegularBouncers(object):
 		while (True):
 
 			if self.counter % self.density == 0:
-				color = (self.color + (self.inc * 5)) % maxColor
+				color = changeColor(self.color, self.inc * 5 / 1500.0)
 				dx = self.inc / 100.0
 				dy = 1.0 - dx
 

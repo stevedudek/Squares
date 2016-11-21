@@ -1,5 +1,5 @@
-from random import randint, choice
-from color import*
+from random import randint
+from color import gradient_wheel
 from math import sqrt
 
 #
@@ -72,94 +72,6 @@ def distance(coord1, coord2):
 	(x2,y2) = coord2
 	return sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) )
 
-#
-# Color Functions
-#
-
-# Pick a random color
-def randColor():
-	return randint(0, maxColor-1)
-	
-# Returns a random color around a given color within a particular range
-# Function is good for selecting blues, for example
-def randColorRange(color, window):
-	return (maxColor + color + randint(-window,window)) % maxColor
-
-# Increase color by an amount (can be negative)
-def changeColor(color, amount):
-	return (maxColor + color + amount) % maxColor
-
-# Wrapper for gradient_wheel in which the intensity is 1.0 (full)
-def wheel(color):
-	return gradient_wheel(color, 1)
-
-# Picks a color in which one rgb channel is off and the other two channels
-# revolve around a color wheel
-def gradient_wheel(color, intense, saturation=0):
-	color = color % maxColor  # just in case color is out of bounds
-	channel = color // 256;
-	value = color % 256;
-
-	if channel == 0:
-		r = 255
-		g = value
-		b = saturation
-	elif channel == 1:
-		r = 255 - value
-		g = 255
-		b = saturation
-	elif channel == 2:
-		r = saturation
-		g = 255
-		b = value
-	elif channel == 3:
-		r = saturation
-		g = 255 - value
-		b = 255
-	elif channel == 4:
-		r = value
-		g = saturation
-		b = 255
-	else:
-		r = 255
-		g = saturation
-		b = 255 - value
-
-	return (r*intense, g*intense, b*intense)
-	
-# Picks a color in which one rgb channel is ON and the other two channels
-# revolve around a color wheel
-def white_wheel(color, intense):
-	color = color % maxColor  # just in case color is out of bounds
-	channel = color / 256;
-	value = color % 256;
-
-	if channel == 0:
-		r = 255
-		g = value
-		b = 255 - value
-	elif channel == 1:
-		r = 255 - value
-		g = 255
-		b = value
-	elif channel == 2:
-		r = value
-		g = 255 - value
-		b = 255
-	elif channel == 3:
-		r = 255
-		g = value
-		b = 255 - value
-	elif channel == 4:
-		r = 255 - value
-		g = 255
-		b = value
-	else:
-		r = value
-		g = 255 - value
-		b = 255
-	
-	return (r*intense, g*intense, b*intense)
 
 #
 # Fader class and its collection: the Faders class
@@ -189,6 +101,11 @@ class Faders(object):
 	def num_faders(self):
 		return len(self.fader_array)
 
+	def fade_all(self):
+		for f in self.fader_array:
+			f.black_cell()
+			self.fader_array.remove(f)
+
 class Fader(object):
 	def __init__(self, squaremodel, color, pos, intense=1.0, growing=False, change=0.25):
 		self.square = squaremodel
@@ -216,7 +133,7 @@ class Fader(object):
 		return self.intense > 0
 
 	def black_cell(self):
-		self.square.set_cell(self.pos, (0,0,0))
+		self.square.black_cell(self.pos)
 
 #
 # Brick class and its collection: the Bricks class
@@ -231,8 +148,9 @@ class Bricks(object):
 		new_brick = Brick(self.square, color, life, pos, length, pitch, length_x, length_y, dx, dy, accel_x, accel_y, use_faders, change)
 		self.brick_array.append(new_brick)
 
-	def move_bricks(self):
-		self.square.black_cells()
+	def move_bricks(self, refresh=True):
+		if refresh:
+			self.square.black_cells()
 
 		# Draw, move, update, and kill all the bricks
 		for b in self.brick_array:
@@ -240,6 +158,10 @@ class Bricks(object):
 			b.move_brick(self.bounce)
 			if b.age_brick() == False:
 				self.brick_array.remove(b)
+
+	def kill_brick(self, b):
+		if b in self.brick_array:
+			self.brick_array.remove(b)
 
 	def set_all_dx(self, dx):
 		for b in self.brick_array:

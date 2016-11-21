@@ -1,12 +1,13 @@
 from HelperFunctions import*
 from color import*
 from math import sin, cos, pi
+from color import randColor, randColorRange
 
 class SineWaveFade(object):
 	def __init__(self, squaremodel):
 		self.name = "SineWaveFade"
 		self.square = squaremodel
-		self.speed = 0.1
+		self.speed = 0.2
 		self.color = randColor()
 		self.counter = 0
 		self.wave_speed = randint(1, 10)
@@ -25,17 +26,17 @@ class SineWaveFade(object):
 				waggle = sin(2 * pi * self.get_fract(self.counter, self.wag_speed))  # Up and Down motion results = -1 to +1
 				angle = self.freq1 * pi * self.get_fract(x + (self.counter * (self.wave_speed / 10.0)), self.square.width)
 				y_top = (sin(angle) * waggle + 0.9) * self.square.height / 2 # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
-				(r,g,b) = wheel(self.color)
-				col = RGB(r,g,b)
 
 				for y in range(self.square.height):
-					col_copy = col.copy()
-					col_copy.v -= (0.1 * abs(y - y_top))
-					self.square.set_cell((x,y), (col_copy.r, col_copy.g, col_copy.b))
+					col_copy = self.color.copy()
+					reduce = 0.08 * abs(y - y_top)
+					if 1.0 > self.color.v - reduce > 0:
+						col_copy.v -= reduce
+					self.square.set_cell((x,y), col_copy)
 
 			# Change the colors
 			if oneIn(10):
-				self.color = randColorRange(self.color, 10)
+				self.color = randColorRange(self.color, 0.01)
 
 			if oneIn(10):
 				self.color_x = upORdown(self.color_x, 1, 10, 30)

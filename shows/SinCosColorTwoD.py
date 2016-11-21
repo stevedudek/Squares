@@ -1,5 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
+from color import randColor, randColorRange, changeColor
 
 class SinCosColorTwoD(object):
 	def __init__(self, squaremodel):
@@ -24,14 +25,14 @@ class SinCosColorTwoD(object):
 					intensity = sin(float(x) / self.repeat) * cos(float(y) / self.repeat)	# -1 to 1
 					spread = intensity * waggle	# (-1 to 1) * (-1 to 1) = -1 to 1
 
-					self.square.set_cell((x, y), wheel(self.color + (spread * maxColor * 0.25)))
+					self.square.set_cell((x, y), changeColor(self.color, spread * maxColor / 6000.0))
 
 			if waggle == 0 and oneIn(10):
 				self.repeat = upORdown(self.repeat, 1, 1, 4)
 
 			# Change the colors
 			if oneIn(10):
-				self.color = randColorRange(self.color, 10)
+				self.color = randColorRange(self.color, 0.007)
 
 			self.counter += 1
 			yield self.speed

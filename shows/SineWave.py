@@ -1,38 +1,12 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-
-class Sparkle(object):
-	def __init__(self, squaremodel, color, pos, intense=0, growing=True, decrease=0.25):
-		self.square = squaremodel
-		self.pos = pos
-		self.color = color
-		self.intense = intense
-		self.growing = growing
-		self.decrease = decrease
-
-	def draw_sparkle(self):
-		self.square.set_cell(self.pos, gradient_wheel(self.color, self.intense))
-
-	def dark_sparkle(self):
-		self.square.set_cell(self.pos, (0, 0, 0))
-
-	def fade_sparkle(self):
-		if oneIn(3):
-			if self.growing == True:
-				self.intense += self.decrease
-				if self.intense >= 1.0:
-					self.intense = 1
-					self.growing = False
-				return True
-			else:
-				self.intense -= self.decrease
-				return self.intense > 0
+from color import randColor, randColorRange
 
 class SineWave(object):
 	def __init__(self, squaremodel):
 		self.name = "SineWave"
 		self.square = squaremodel
-		self.sparkles = []  # List that holds Sparkle objects
+		self.sparkles = Faders(squaremodel)
 		self.speed = 0.1
 		self.color = randColor()
 		self.counter = 0
@@ -52,19 +26,13 @@ class SineWave(object):
 				angle = 2 * pi * self.get_fract(x + self.counter, self.square.width)
 				y = int((sin(angle) * waggle + 1) * self.square.height / 2)	# (-1 to 1) * (-1 to 1) + 1 = 0 to 2
 
-				new_sparkle = Sparkle(self.square, randColorRange(self.color, 50), (x,y), 1.0, False, self.decay)
-				self.sparkles.append(new_sparkle)
+				self.sparkles.add_fader(randColorRange(self.color, 0.03), (x,y), 1.0, False, self.decay)
 
-			# Draw the sparkles
-			for s in self.sparkles:
-				s.draw_sparkle()
-				if s.fade_sparkle() == False:
-					s.dark_sparkle()
-					self.sparkles.remove(s)
+			self.sparkles.cycle_faders()
 
 			# Change the colors
 			if oneIn(10):
-				self.color = randColorRange(self.color, 10)
+				self.color = randColorRange(self.color, 0.007)
 
 			self.counter -= 1
 			yield self.speed  	# random time set in init function

@@ -1,5 +1,6 @@
 from HelperFunctions import*
 from square import*
+from color import randColor, randColorRange, changeColor
         		
 class Swirl(object):
 	def __init__(self, squaremodel, square_num, color, pos, dir, sym, life, longevity):
@@ -46,7 +47,7 @@ class Swirls(object):
 				for sq in range(self.square.num_squares()):
 					newswirl = Swirl(self.square, sq, self.maincolor, get_center(sq), randDir(), choice([1,2,4]), 0, self.longevity)
 					self.liveswirls.append(newswirl)
-					self.maincolor = (self.maincolor + 30) % maxColor
+					self.maincolor = changeColor(self.maincolor, 0.02)
 				
 			for s in self.liveswirls:
 				s.draw_swirl()
@@ -64,6 +65,6 @@ class Swirls(object):
 				self.longevity = upORdown(self.longevity, 2, 40, 100)
 
 			if oneIn(40):
-				self.maincolor = randColorRange(self.maincolor, 30)
+				self.maincolor = randColorRange(self.maincolor, 0.02)
 
 			yield self.speed

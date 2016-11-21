@@ -1,5 +1,7 @@
 from HelperFunctions import*
 from math import sin, cos, pi
+from color import randColor, randColorRange
+from random import choice
 
 class LissajousGrade(object):
 	def __init__(self, squaremodel):
@@ -29,7 +31,7 @@ class LissajousGrade(object):
 				self.color = randColorRange(self.color, 10)
 				self.repeat = choice([1, 2, 3, 4, 6, 8])
 
-			self.color = randColorRange(self.color, 20)
+			self.color = randColorRange(self.color, 0.007)
 
 			if oneIn(100):
 				self.grade = upORdown(self.grade, 1, 3, 10)

@@ -8,9 +8,10 @@ SQUARE_SIZE = 12    # Number of LEDs high/wide for each square
 """
 Parameters for each Square: (X, Y)
 """
-BIG_COORD = [ (0,0), (1,0), (0,1), (1,1) ]
+BIG_COORD = [ (0,0), (1,0), (2,0), (3,0) ]
 
 from random import choice, randint
+from color import HSV
 
 def load_squares(model):
     return Square(model)
@@ -65,12 +66,15 @@ class Square(object):
         for c in self.all_cells():
             self.next_frame[c] = color
 
+    def black_cell(self, coord):
+        self.set_cell(coord, HSV(0,0,0))
+
     def black_cells(self):
-        self.set_all_cells((0,0,0))
+        self.set_all_cells(HSV(0, 0, 0))
 
     def clear(self):
         self.force_frame()
-        self.set_all_cells((0,0,0))
+        self.black_cells()
         self.go()
 
     def go(self):
@@ -137,6 +141,11 @@ class Square(object):
         right = [(x_offset + SQUARE_SIZE - 1, y_offset + y) for y in range(1, SQUARE_SIZE - 1)]
 
         return bottom + top + left + right
+
+    def frame_cells(self):
+        "return a list of outer frame cells"
+        return [(x,0) for x in range(self.width)] + [(x,self.height-1) for x in range(self.width)] + \
+               [(0,y) for y in range(self.height)] + [(self.width - 1, y) for y in range(self.height)]
 
     def is_on_square(self, square_num, coord):
         (x, y) = coord

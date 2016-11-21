@@ -1,6 +1,6 @@
 from HelperFunctions import *
 from square import *
-
+from color import randColor, randColorRange
 
 def create_snake_model(squaremodel):
     return SnakeModel(squaremodel)
@@ -52,7 +52,7 @@ class SnakeModel(object):
             if self.get_snake_value(coord) == snakeID:
                 self.put_snake_value(coord, 0)
                 ## Activate the line below for quite a different effect
-                self.square.set_cell(coord, [0, 0, 0])  # Turn path back to black
+                self.square.black_cell(coord)
 
     def __repr__(self):
         return str(self.lifemap)
@@ -100,7 +100,7 @@ class Snakes(object):
                 if startpos:  # Found a valid starting position
                     self.nextSnakeID += 1
                     self.snakemap.put_snake_value(startpos, self.nextSnakeID)
-                    newsnake = Snake(self.square, randColorRange(self.maincolor, 400), self.nextSnakeID, startpos)
+                    newsnake = Snake(self.square, randColorRange(self.maincolor, 0.2), self.nextSnakeID, startpos)
                     self.livesnakes[self.nextSnakeID] = newsnake
 
             for id, s in self.livesnakes.iteritems():

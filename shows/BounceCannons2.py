@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from math import sin, cos, pi
+from color import randColor, randColorRange, changeColor
 
 class BounceCannons2(object):
 	def __init__(self, squaremodel):
@@ -8,7 +8,7 @@ class BounceCannons2(object):
 		self.bricks = Bricks(squaremodel)
 		self.speed = 0.05
 		self.color1 = randColor()
-		self.color2 = self.color1 + (maxColor // 2)
+		self.color2 = changeColor(self.color1, 0.5)
 		self.density = randint(1, 5)
 		self.length = randint(1,10)
 		          
@@ -23,7 +23,7 @@ class BounceCannons2(object):
 				color = self.color1 if L_cannon else self.color2
 				x_range = randint(5, 44) / 100.0
 				dy = 0.45 - abs(x_range)
-				self.bricks.add_brick(wheel(randColorRange(color, 100)), life=200,
+				self.bricks.add_brick(randColorRange(color, 0.1), life=200,
 									  pos=(0 if L_cannon else (self.square.width-1), 0),
 									  length=self.length, pitch=0.5, length_x=0.5, length_y=0.5 if L_cannon else -0.5,
 									  dx=x_range if L_cannon else -x_range, dy=dy,
@@ -37,10 +37,10 @@ class BounceCannons2(object):
 
 			# Change the colors
 			if oneIn(10):
-				self.color1 = randColorRange(self.color1, 20)
+				self.color1 = randColorRange(self.color1, 0.05)
 
 			if oneIn(10):
-				self.color2 = randColorRange(self.color2, 40)
+				self.color2 = randColorRange(self.color2, 0.03)
 
 			if oneIn(100):
 				self.density = upORdown(self.density, 1, 1, 5)
