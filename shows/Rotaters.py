@@ -10,7 +10,7 @@ class Rotater(object):
 		self.speed = speed
 		self.color = color
 		self.faders = Faders(squaremodel)
-		self.life = randint(50,100)
+		self.life = randint(80,200)
 		self.angle = 0
 		self.sym = choice([3,4,6,8])
 		self.pos = pos

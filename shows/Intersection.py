@@ -35,12 +35,12 @@ class Intersection(object):
 
 				if i == 0:	# left
 					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
-										  life=20 + (self.square.width / self.brick_speed[i]),
+										  life=150 + (self.square.width / self.brick_speed[i]),
 										  pos=(-brick_length, randint(0, self.square.height)),
 										  length=brick_length, pitch=1, length_x=1, length_y=0, dx=self.brick_speed[i], dy=0)
 				elif i == 1:	# right
 					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
-										  life=20 + (self.square.width / self.brick_speed[i]),
+										  life=150 + (self.square.width / self.brick_speed[i]),
 										  pos=(self.square.width, randint(0, self.square.height)),
 										  length=brick_length, pitch=1, length_x=1, length_y=0, dx=-self.brick_speed[i], dy=0)
 				elif i == 2:	# bottom

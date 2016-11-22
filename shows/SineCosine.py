@@ -31,10 +31,10 @@ class SineCosine(object):
 			for x in range(self.square.width):
 
 				sin_angle = self.freq1 * pi * self.get_fract(x + (self.counter * (self.wave_speed / 6.0)), self.square.width)
-				y_sin_top = (sin(sin_angle) + 1.0) * self.square.height / 2 # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
+				y_sin_top = (sin(sin_angle) + 1.0) * self.square.height / 2.0 # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
 
 				cos_angle = self.freq2 * pi * self.get_fract(x - (self.counter * (self.wave_speed / 3.0)), self.square.width)
-				y_cos_top = (sin(cos_angle) + 1.0) * self.square.height / 2  # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
+				y_cos_top = (sin(cos_angle) + 1.0) * self.square.height / 2.0  # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
 
 				for y in range(self.square.height):
 					if y <= y_sin_top:

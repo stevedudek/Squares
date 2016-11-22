@@ -8,7 +8,7 @@ class GameOfLife(object):
 	def __init__(self, squaremodel):
 		self.name = "GameOfLife"
 		self.square = squaremodel
-		self.speed = randint(2, 8) / 10.0
+		self.speed = randint(2, 20) / 10.0
 		self.counter = 0
 		self.color = randColor()
 		self.cellmap = {}
@@ -42,7 +42,7 @@ class GameOfLife(object):
 			self.color = changeColor(self.color, 0.02)
 
 			if oneIn(200):
-				self.speed = upORdown(self.speed, 0.1, 0.2, 1.0)
+				self.speed = upORdown(self.speed, 0.1, 0.2, 2.0)
 			
 			yield self.speed
 

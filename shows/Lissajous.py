@@ -11,8 +11,8 @@ class Lissajous(object):
 		self.counter = 0
 		self.color = randColor()
 		(self.a, self.b) = choice([(1, 2), (3, 2), (5, 4), (1.5, 0), (3, pi / 2)])
-		self.trail_length = 100
-		self.repeat = 2
+		self.repeat = choice([1, 2, 3, 4, 6, 8])
+		self.trail_length = int(100 / self.repeat)
 		self.full_cycle = 3 * 2 * pi
 		          
 	def next_frame(self):

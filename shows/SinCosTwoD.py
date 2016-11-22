@@ -10,7 +10,7 @@ class SinCosTwoD(object):
 		self.color = randColor()
 		self.counter = 0
 		self.repeat = randint(1,4)
-		self.wag_speed = randint(10, 50)
+		self.wag_speed = randint(20, 50)
 
 		          
 	def next_frame(self):

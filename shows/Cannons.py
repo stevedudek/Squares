@@ -8,7 +8,7 @@ class Cannons(object):
 		self.bricks = Bricks(squaremodel)
 		self.speed = 0.04
 		self.color = randColor()
-		self.density = randint(6,20)
+		self.density = randint(2,10)
 		self.trail = randint(1,20)
 		          
 	def next_frame(self):
@@ -33,7 +33,7 @@ class Cannons(object):
 				self.color = randColorRange(self.color, 0.005)
 
 			if oneIn(100):
-				self.density = upORdown(self.density, 1, 6, 20)
+				self.density = upORdown(self.density, 1, 1, 10)
 
 			if oneIn(20):
 				self.trail = upORdown(self.trail, 1, 1, 20)

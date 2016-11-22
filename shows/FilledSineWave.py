@@ -19,8 +19,6 @@ class FilledSineWave(object):
 		          
 	def next_frame(self):
 
-		self.square.clear()
-
 		while (True):
 			self.square.black_cells()
 

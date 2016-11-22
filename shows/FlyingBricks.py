@@ -21,14 +21,14 @@ class FlyingBricks(object):
 				brick_length = randint(3,7)
 				brick_speed = 1.0 + (randint(-50, 50) / 100.0)
 				self.bricks.add_brick(randColorRange(self.color, brick_length * 10 / 1000.0),
-									  life=60 + (self.square.width / brick_speed),
+									  life=100 + (self.square.width / brick_speed),
 									  pos=(-brick_length, randint(0, self.square.height)),
 									  length=brick_length, pitch=1, length_x=1, length_y=0, dx=brick_speed, dy=0)
 
 			if oneIn(200):	# White bricks heading left
 				brick_length = randint(5, 10)
 				brick_speed = 2.0 + (randint(-50, 50) / 100.0)
-				self.bricks.add_brick(self.white, life=60 + (self.square.width / brick_speed),
+				self.bricks.add_brick(self.white, life=100 + (self.square.width / brick_speed),
 									  pos=(self.square.width, randint(0, self.square.height)),
 									  length=brick_length, pitch=1, length_x=1, length_y=0, dx=-brick_speed, dy=0)
 

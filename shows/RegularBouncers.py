@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, changeColor
+from color import randColor, changeColor, randColorRange
 
 class RegularBouncers(object):
 	def __init__(self, squaremodel):
@@ -7,7 +7,8 @@ class RegularBouncers(object):
 		self.square = squaremodel
 		self.bricks = Bricks(squaremodel, bounce=True)
 		self.speed = 0.03
-		self.color = randColor()
+		self.color1 = randColor()
+		self.color2 = randColor()
 		self.density = randint(15, 30)
 		self.counter = 0
 		self.inc = 0
@@ -19,15 +20,16 @@ class RegularBouncers(object):
 		while (True):
 
 			if self.counter % self.density == 0:
-				color = changeColor(self.color, self.inc * 5 / 1500.0)
+				color1 = changeColor(self.color1, self.inc * 5 / 1500.0)
+				color2 = changeColor(self.color2, self.inc * 5 / 1500.0)
 				dx = self.inc / 100.0
 				dy = 1.0 - dx
 
-				self.bricks.add_brick(color, life=200, pos=(0, self.square.height-1),
+				self.bricks.add_brick(color1, life=200, pos=(0, self.square.height-1),
 									  length=0, pitch=1, length_x=0, length_y=0,
 									  dx=dx, dy=dy, accel_x=0, accel_y=0, use_faders=True, change=0.4)
 
-				self.bricks.add_brick(color, life=1000, pos=(self.square.width - 1, self.square.height - 1),
+				self.bricks.add_brick(color2, life=1000, pos=(self.square.width - 1, self.square.height - 1),
 									 length=0, pitch=1, length_x=0, length_y=0,
 									 dx=-dx, dy=dy, accel_x=0, accel_y=0, use_faders=True, change=0.2)
 

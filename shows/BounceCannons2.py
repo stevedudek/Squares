@@ -22,10 +22,11 @@ class BounceCannons2(object):
 				L_cannon = True if oneIn(2) else False
 				color = self.color1 if L_cannon else self.color2
 				x_range = randint(5, 44) / 100.0
-				dy = 0.45 - abs(x_range)
+				dy = (0.45 - abs(x_range)) * plusORminus()
 				self.bricks.add_brick(randColorRange(color, 0.1), life=200,
-									  pos=(0 if L_cannon else (self.square.width-1), 0),
-									  length=self.length, pitch=0.5, length_x=0.5, length_y=0.5 if L_cannon else -0.5,
+									  pos=(0 if L_cannon else (self.square.width-1), self.square.height / 2),
+									  length=self.length, pitch=0.5, length_x=-0.5 if L_cannon else 0.5,
+									  length_y=0.5 if L_cannon else -0.5,
 									  dx=x_range if L_cannon else -x_range, dy=dy,
 									  accel_x=0, accel_y=0, use_faders=False)
 

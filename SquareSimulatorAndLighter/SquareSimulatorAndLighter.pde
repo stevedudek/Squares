@@ -920,7 +920,7 @@ void morph_frame(float fract) {
   if (fract > 1.0) {  // Can't morph greater than 1
     fract = 1.0;
   }
-  if (abs(fract - old_morph) < 0.1) {  // Avoid small morph changes
+  if (abs(fract - old_morph) < 0.01) {  // Avoid small morph changes
    return;
   }
   old_morph = fract;
