@@ -355,8 +355,8 @@ if __name__=='__main__':
     import argparse
     parser = argparse.ArgumentParser(description='Squares Light Control')
 
-    parser.add_argument('--max-time', type=float, default=float(180),
-                        help='Maximum number of seconds a show will run (default 180)')
+    parser.add_argument('--max-time', type=float, default=float(60),
+                        help='Maximum number of seconds a show will run (default 60)')
 
     # Simulator must run to turn on lights
     # parser.add_argument('--simulator',dest='simulator',action='store_true')

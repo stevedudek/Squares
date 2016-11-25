@@ -7,7 +7,7 @@ class SineCosine(object):
 		self.name = "SineCosine"
 		self.square = squaremodel
 		self.sparkles = []  # List that holds Sparkle objects
-		self.speed = 0.1
+		self.speed = 0.2
 		self.color1 = randColor()
 		self.color2 = randColor()
 		self.counter = 0
@@ -16,8 +16,8 @@ class SineCosine(object):
 		self.decay = randint(1,10) / 20.0
 		self.color_x = randint(1,20)
 		self.color_y = randint(1, 20)
-		self.freq1 = randint(1, 4)
-		self.freq2 = randint(1, 4)
+		self.freq1 = randint(1, 4) * 2
+		self.freq2 = randint(1, 4) * 2
 
 		          
 	def next_frame(self):
@@ -56,11 +56,11 @@ class SineCosine(object):
 			if oneIn(10):
 				self.color_y = upORdown(self.color_y, 1, 1, 30)
 
-			if oneIn(10):
-				self.freq1 = upORdown(self.freq1, 0.05, 1, 4)
+			if oneIn(200):
+				self.freq1 = upORdown(self.freq1, 2, 2, 8)
 
-			if oneIn(10):
-				self.freq2 = upORdown(self.freq2, 0.05, 1, 4)
+			if oneIn(200):
+				self.freq2 = upORdown(self.freq2, 2, 2, 8)
 
 			self.counter -= 1
 			yield self.speed  	# random time set in init function

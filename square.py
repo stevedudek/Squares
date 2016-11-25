@@ -11,7 +11,8 @@ Parameters for each Square: (X, Y)
 BIG_COORD = [ (0,0), (1,0), (2,0), (3,0) ]
 
 from random import choice, randint
-from color import HSV
+from color import HSV, gradient_wheel
+from math import sin, cos, pi
 
 def load_squares(model):
     return Square(model)
@@ -73,7 +74,8 @@ class Square(object):
         self.set_all_cells(HSV(0, 0, 0))
 
     def clear(self):
-        self.force_frame()
+        self.set_all_cells(HSV(0, 0, 0.001))
+        self.go()
         self.black_cells()
         self.go()
 
@@ -113,10 +115,16 @@ class Square(object):
         return cellmap
 
     def calc_height(self):
-        return SQUARE_SIZE * (max([y for (x,y) in BIG_COORD]) - min([y for (x,y) in BIG_COORD]) + 1)
+        return SQUARE_SIZE * self.big_height()
+
+    def big_height(self):
+        return (max([y for (x,y) in BIG_COORD]) - min([y for (x,y) in BIG_COORD]) + 1)
 
     def calc_width(self):
-        return SQUARE_SIZE * (max([x for (x,y) in BIG_COORD]) - min([x for (x,y) in BIG_COORD]) + 1)
+        return SQUARE_SIZE * self.big_width()
+
+    def big_width(self):
+        return (max([x for (x, y) in BIG_COORD]) - min([x for (x, y) in BIG_COORD]) + 1)
 
     def wrap_coord(self, coord, wrap):
         (x,y) = coord
@@ -152,6 +160,20 @@ class Square(object):
         (x_corner, y_corner) = get_LL_corner(square_num)
         return x_corner <= x < x_corner + SQUARE_SIZE and y_corner <= y < y_corner + SQUARE_SIZE
 
+    def draw_circle(self, center, r, color):
+        if r < 1:
+            self.set_cell(center, color)
+            return
+
+        (x_center, y_center) = center
+
+        self.set_cells([(round(x_center + (r * sin(2 * pi * angle / (r * 8)))),
+                         round(y_center + (r * cos(2 * pi * angle / (r * 8))))) for angle in range(r * 8)], color)
+
+    def draw_sphere(self, center, radius, color, fade=False):
+        for r in reversed(range(radius)):
+            color_adj = gradient_wheel(color, float(radius - r + 1) / radius) if fade else color
+            self.draw_circle(center, r, color_adj)
 
 ##
 ## square cell primitives

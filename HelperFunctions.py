@@ -72,7 +72,6 @@ def distance(coord1, coord2):
 	(x2,y2) = coord2
 	return sqrt( (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) )
 
-
 #
 # Fader class and its collection: the Faders class
 #
@@ -221,11 +220,11 @@ class Brick(object):
 		new_y = self.pos[1] + self.dy
 
 		if bounce:
-			if new_x < 0 or new_x >= (self.square.width - 1):
-				self.dx *= (-1 + (randint(-10,10) / 50.0))
+			if new_x < 0 or new_x >= self.square.width:
+				self.dx *= -1
 				new_x = self.pos[0] + self.dx
-			if new_y < 0 or new_y >= (self.square.height - 1):
-				self.dy *= (-1 + (randint(-10,10) / 50.0))
+			if new_y < 0 or new_y >= self.square.height:
+				self.dy *= -1
 				new_y = self.pos[1] + self.dy
 
 		self.pos = (new_x, new_y)
@@ -238,11 +237,22 @@ class Brick(object):
 	def get_coord(self):
 		return self.pos
 
+	def get_x(self):
+		(x,y) = self.pos
+		return x
+
+	def get_y(self):
+		(x,y) = self.pos
+		return y
+
 	def get_dx(self):
 		return self.dx
 
 	def get_dy(self):
 		return self.dy
+
+	def get_life(self):
+		return self.life
 
 	def set_dx(self, dx):
 		self.dx = dx
@@ -269,3 +279,6 @@ class Brick(object):
 	def set_y(self, y):
 		(x, old_y) = self.pos
 		self.pos = (x, y)
+
+	def set_life(self, life):
+		self.life = life

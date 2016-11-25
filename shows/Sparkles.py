@@ -6,7 +6,7 @@ class Sparkles(object):
 		self.name = "Sparkles"
 		self.square = squaremodel
 		self.sparkles = Faders(squaremodel)
-		self.speed = 0.2
+		self.speed = 0.3
 		self.color = randColor()
 		self.spark_num = self.square.squares * 20
 
