@@ -18,7 +18,7 @@ class Branch(object):
 		else:
 			ratio = 1 - self.life / float(self.decay) # light center
 		
-		self.square.set_cell(self.pos, gradient_wheel(self.color, ratio))
+		self.square.set_cell(self.pos, gradient_wheel(self.color, 0.5 * ratio))
 							
 		# Random chance that path changes
 		if oneIn(3):

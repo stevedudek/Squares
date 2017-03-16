@@ -14,7 +14,7 @@ class Swirl(object):
 		self.longevity = longevity
 
 	def draw_swirl(self):
-		self.square.set_cells(mirror_coords(self.pos, self.sym), gradient_wheel(self.color, 1 - self.life / float(self.longevity)))
+		self.square.set_cells(mirror_coords(self.pos, self.sym), gradient_wheel(self.color, 0.5 * (1 - self.life / float(self.longevity))))
 							
 		# Random chance that path changes - spirals only in one direction
 		if oneIn(2):

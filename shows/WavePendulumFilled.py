@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange, changeColor, RGB
+from color import randColor, randColorRange, changeColor, RGB, dim_color
 
 class WavePendulumFilled(object):
 	def __init__(self, squaremodel):
@@ -31,7 +31,7 @@ class WavePendulumFilled(object):
 					else:
 						c = changeColor(self.color , x * self.gradient / 1500.0) if y > y_top else self.black
 
-					self.square.set_cell((x, y), c)
+					self.square.set_cell((x, y), dim_color(c, 0.5))
 
 			self.counter += 1
 			if self.counter % (int(2 * pi * self.cycles)) == 0:

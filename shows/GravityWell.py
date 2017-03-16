@@ -50,4 +50,4 @@ class GravityWell(object):
 
 		for x in range(self.square.width):
 			for y in range(self.square.height):
-				self.square.set_cell((x,y), gradient_wheel(self.color, (distance((x,y), self.center)) / max_dist))
+				self.square.set_cell((x,y), gradient_wheel(self.color, 0.4 * ((distance((x,y), self.center)) / max_dist) ** 2))

@@ -9,7 +9,7 @@ class Snowglobe2(object):
 		self.counter = 0
 		self.color = randColor()
 		self.bricks = Bricks(squaremodel)
-		self.num_bricks = self.square.width * randint(5,40)
+		self.num_bricks = self.square.width * randint(5,20)
 		self.brick_length = 2
 		          
 	def next_frame(self):

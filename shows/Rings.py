@@ -22,7 +22,7 @@ class Ball(object):
 		for i in range(self.size-3):
 			intensity =(i+1) / (self.size - 3.0)
 			self.square.set_cells(square_shape(square_in_direction(self.pos,1, i), self.size),
-				gradient_wheel(self.color, intensity))
+				gradient_wheel(self.color, 0.6 * intensity))
 	
 	def move_ball(self):
 		squares = 20

@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, randColorRange, changeColor
+from color import randColor, randColorRange, changeColor, dim_color
 from math import sin, cos, pi
 
 class Diagonals(object):
@@ -18,7 +18,7 @@ class Diagonals(object):
 
 
 			for i in range(self.density):
-				color = randColorRange(self.color, 0.1)
+				color = dim_color(randColorRange(self.color, 0.1), 0.5)
 				x = randint(0, self.square.width)
 				# add_brick(self, color, life, pos, length, pitch, length_x, length_y, dx, dy, accel_x=0, accel_y=0, use_faders=False, change=0.25):
 				self.bricks.add_brick(color, 40, pos=(x,0), length=self.length, pitch=1, length_x=-1, length_y=-1, dx=1, dy=1)

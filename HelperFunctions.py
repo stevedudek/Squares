@@ -160,6 +160,7 @@ class Bricks(object):
 
 	def kill_brick(self, b):
 		if b in self.brick_array:
+			b.kill_faders()
 			self.brick_array.remove(b)
 
 	def set_all_dx(self, dx):
@@ -282,3 +283,7 @@ class Brick(object):
 
 	def set_life(self, life):
 		self.life = life
+
+	def kill_faders(self):
+		if self.faders:
+			self.faders.fade_all()

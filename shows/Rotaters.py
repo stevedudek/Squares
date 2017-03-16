@@ -21,7 +21,7 @@ class Rotater(object):
 			for i in range(self.sym):
 				rad = 2 * 3.14159 * (self.angle + (i * 360 / self.sym)) / 360
 				pos = (round(self.pos[0] + (sin(rad) * l)), round(self.pos[1] + (cos(rad) * l)))
-				self.faders.add_fader(changeColor(self.color, l * 0.01), pos, intense=1.0, growing=False, change=self.change)
+				self.faders.add_fader(changeColor(self.color, l * 0.01), pos, intense=0.8, growing=False, change=self.change)
 
 		self.faders.cycle_faders(False)
 

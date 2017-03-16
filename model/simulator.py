@@ -84,6 +84,7 @@ class SimulatorModel(object):
 
     def translate_color(self, color):
         """Convert the hsv color object into rgb"""
+        return (color.r, color.g, color.b)
         # corrected = restrict_color(color, -0.05, 0.15) # RED clipping happens here
-        corrected = color
-        return (corrected.r, corrected.g, corrected.b)
+        # corrected = color
+        # return (corrected.r, corrected.g, corrected.b)

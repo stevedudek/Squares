@@ -7,7 +7,7 @@ class Packets(object):
 		self.name = "Packets"
 		self.square = squaremodel
 		self.sparkles = Faders(squaremodel)
-		self.speed = 0.1
+		self.speed = 0.2
 		self.color = randColor()
 		self.counter = 0
 		self.wave_speed = randint(1, 10)

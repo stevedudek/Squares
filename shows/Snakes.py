@@ -69,7 +69,7 @@ class Snake(object):
         self.alive = True
 
     def draw_snake(self):
-        self.square.set_cell(self.pos, gradient_wheel(self.color, 1.0 - (self.pathlength / 200.0)))
+        self.square.set_cell(self.pos, gradient_wheel(self.color, 0.6 * (1.0 - (self.pathlength / 200.0))))
         self.pathlength += 1
 
 

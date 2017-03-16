@@ -12,7 +12,7 @@ class Branch(object):
 		self.life = life	# How long the branch has been around
 
 	def draw_branch(self):
-		self.square.set_cell(self.pos, gradient_wheel(self.color, 1.0 - (self.life / 20.0)))
+		self.square.set_cell(self.pos, gradient_wheel(self.color, 0.4 * (1.0 - (self.life / 20.0))))
 	
 	def move_branch(self):			
 		newspot = square_in_direction(self.pos, self.dir, 1)	# Where is the branch going?

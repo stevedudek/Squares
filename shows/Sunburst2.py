@@ -10,7 +10,7 @@ class Sunburst2(object):
 		self.bricks = Bricks(squaremodel, bounce=False)
 		self.speed = randint(1,5) / 5.0
 		self.color = randColor()
-		self.density = randint(2, 5)
+		self.density = randint(4, 8)
 		self.syms = [2, 3, 4, 5, 6, 8, 10, 12]
 		self.sym = randint(0, len(self.syms) - 1)
 
@@ -36,7 +36,7 @@ class Sunburst2(object):
 				self.color = randColorRange(self.color, 0.1)
 
 			if oneIn(40):
-				self.density = upORdown(self.density, 1, 2, 5)
+				self.density = upORdown(self.density, 1, 4, 8)
 
 			if oneIn(100):
 				self.sym = upORdown(self.sym, 1, 0, len(self.syms) - 1)

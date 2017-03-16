@@ -21,7 +21,7 @@ class LissajousGrade(object):
 
 			for x in range(self.square.width):
 				for y in range(self.square.height):
-					self.square.set_cell((x, y), gradient_wheel(self.color, max([self.calc_intense((x,y), self.get_lj_coord(j)) for j in range(self.repeat)])))
+					self.square.set_cell((x, y), gradient_wheel(self.color, 0.8 * max([self.calc_intense((x,y), self.get_lj_coord(j)) for j in range(self.repeat)])))
 
 			self.counter += 0.05
 			if self.counter > self.full_cycle:

@@ -20,7 +20,7 @@ class Dendron(object):
 			ratio = 1 - self.life / float(self.longevity)	# light center
 			
 		# color the 4 mirrored coordinates
-		self.square.set_cells(mirror_coords(self.pos), gradient_wheel(self.color, ratio))
+		self.square.set_cells(mirror_coords(self.pos), gradient_wheel(self.color, 0.5 * ratio))
 							
 		# Random chance that path changes
 		if oneIn(4):

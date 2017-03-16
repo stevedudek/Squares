@@ -1,5 +1,5 @@
 from random import choice
-from color import randColor, changeColor
+from color import randColor, changeColor, dim_color
 
 from HelperFunctions import*
 from square import touch_neighbors
@@ -61,7 +61,7 @@ class GameOfLife(object):
 				self.light_square(coord)
 
 	def light_square(self, coord):
-		self.square.set_cell(coord, self.color)
+		self.square.set_cell(coord, dim_color(self.color, 0.7))
 		self.cellmap[coord] = True
 
 	def kill_square(self, coord):

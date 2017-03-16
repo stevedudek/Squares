@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, changeColor
+from color import randColor, changeColor, dim_color
 
 class VertLines(object):
 	def __init__(self, squaremodel):
@@ -17,8 +17,8 @@ class VertLines(object):
 			for x in range(self.square.width):
 				for y in range(self.square.height):
 					color = changeColor(self.color1,  - y * 0.02) if x % 2 else changeColor(self.color2, y * 0.02)
-					self.square.set_cell((x,y), color)
-			
+					self.square.set_cell((x,y), dim_color(color, 0.33))
+
 			# Change the colors
 			if oneIn(10):
 				self.color1 = changeColor(self.color1, 0.007)

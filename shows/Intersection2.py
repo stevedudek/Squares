@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, randColorRange
+from color import randColor, randColorRange, dim_color
 
 class Intersection2(object):
 	def __init__(self, squaremodel):
@@ -33,23 +33,25 @@ class Intersection2(object):
 				else:
 					i = 2 if side else 3
 
+				new_color = dim_color(randColorRange(color, brick_length / 150.0), 0.6)
+
 				if i == 0:	# left
-					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
+					self.bricks.add_brick(new_color,
 										  life=20 + (self.square.width / self.brick_speed[i]),
 										  pos=(-brick_length, randint(0, self.square.height)),
 										  length=brick_length, pitch=1, length_x=1, length_y=0, dx=self.brick_speed[i], dy=0)
 				elif i == 1:	# right
-					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
+					self.bricks.add_brick(new_color,
 										  life=20 + (self.square.width / self.brick_speed[i]),
 										  pos=(self.square.width, randint(0, self.square.height)),
 										  length=brick_length, pitch=1, length_x=1, length_y=0, dx=-self.brick_speed[i], dy=0)
 				elif i == 2:	# bottom
-					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
+					self.bricks.add_brick(new_color,
 										  life=20 + (self.square.width / self.brick_speed[i]),
 										  pos=(randint(0, self.square.width), -brick_length),
 										  length=brick_length, pitch=1, length_x=0, length_y=1, dx=0, dy=self.brick_speed[i])
 				else:	# top
-					self.bricks.add_brick(randColorRange(color, brick_length / 150.0),
+					self.bricks.add_brick(new_color,
 										  life=20 + (self.square.width / self.brick_speed[i]),
 										  pos=(randint(0, self.square.width), self.square.height),
 										  length=brick_length, pitch=1, length_x=0, length_y=1, dx=0, dy=-self.brick_speed[i])

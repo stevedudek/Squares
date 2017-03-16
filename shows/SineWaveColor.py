@@ -29,6 +29,7 @@ class SineWaveColor(object):
 				for y in range(self.square.height):
 					col_copy = self.color.copy()
 					col_copy.h -= (0.02 * abs(y - y_top))
+					col_copy.v *= 0.3
 					self.square.set_cell((x,y), col_copy)
 
 			# Change the colors

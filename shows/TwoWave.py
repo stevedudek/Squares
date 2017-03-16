@@ -28,8 +28,8 @@ class TwoWaves(object):
 				y2 = round((cos((x + self.counter) / (self.freq2 * pi)) * waggle2 + 1) * (self.square.height-1) / 2)
 
 				for i in range(2):
-					self.sparkles.add_fader(randColorRange(self.color1, 0.02), (x - i, y), 1.0, False, 0.1)
-					self.sparkles.add_fader(randColorRange(self.color2, 0.02), (x - i, y2), 1.0, False, 0.1)
+					self.sparkles.add_fader(randColorRange(self.color1, 0.02), (x - i, y), 0.5, False, 0.05)
+					self.sparkles.add_fader(randColorRange(self.color2, 0.02), (x - i, y2), 0.5, False, 0.05)
 
 			self.sparkles.cycle_faders()
 

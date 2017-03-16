@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange, changeColor
+from color import randColor, randColorRange, changeColor, dim_color
 
 class WavePendulum(object):
 	def __init__(self, squaremodel):
@@ -9,7 +9,7 @@ class WavePendulum(object):
 		self.speed = 0.05
 		self.counter = 0
 		self.background = randColor()
-		self.color = randColor()
+		self.color = changeColor(self.background, 0.5)
 		self.min_freq = 10	# fastest pendulum does this many cycles in one loop
 		self.cycle_time = 5	# speed of one cycle
 		self.cycles = int(self.cycle_time / self.speed)
@@ -20,7 +20,7 @@ class WavePendulum(object):
 
 		while (True):
 
-			self.square.set_all_cells(self.background)
+			self.square.set_all_cells(dim_color(self.background, 0.3))
 
 			for x in range(self.square.width):
 

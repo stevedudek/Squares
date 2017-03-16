@@ -12,7 +12,7 @@ class Grower(object):
 		self.gradient = gradient
 
 	def draw_grower(self):
-		self.square.draw_circle(self.pos, self.size, gradient_wheel(self.color, float(self.max_size - self.size + 1) / self.max_size))
+		self.square.draw_circle(self.pos, self.size, gradient_wheel(self.color, 0.8 * float(self.max_size - self.size) / self.max_size))
 
 	def grow_grower(self):
 		self.size += 1

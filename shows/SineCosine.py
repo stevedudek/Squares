@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange, changeColor
+from color import randColor, randColorRange, changeColor, dim_color
 
 class SineCosine(object):
 	def __init__(self, squaremodel):
@@ -38,10 +38,10 @@ class SineCosine(object):
 
 				for y in range(self.square.height):
 					if y <= y_sin_top:
-						self.square.set_cell((x, y), changeColor(self.color1, (self.color_x * x / 1500.0) + (self.color_y * y / 1500.0)))
+						self.square.set_cell((x, y), dim_color(changeColor(self.color1, (self.color_x * x / 1500.0) + (self.color_y * y / 1500.0)), 0.6))
 
 					if y <= y_cos_top:
-						self.square.set_cell((x, y), changeColor(self.color2, (self.color_x * y / 1500.0) + (self.color_y * x / 1500.0)))
+						self.square.set_cell((x, y), dim_color(changeColor(self.color2, (self.color_x * y / 1500.0) + (self.color_y * x / 1500.0)), 0.3))
 
 			# Change the colors
 			if oneIn(10):

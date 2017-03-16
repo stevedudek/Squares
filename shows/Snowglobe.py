@@ -10,7 +10,7 @@ class Snowglobe(object):
 		self.counter = 0
 		self.color = randColor()
 		self.bricks = Bricks(squaremodel, bounce=True)
-		self.num_bricks = 80
+		self.num_bricks = 48
 		          
 	def next_frame(self):
 

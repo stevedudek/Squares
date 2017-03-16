@@ -12,7 +12,8 @@ class Grower(object):
 		self.type = type
 
 	def draw_grower(self):
-		color = changeColor(self.color, self.gradient * self.size) if self.type else gradient_wheel(self.color, float(self.max_size - self.size + 1) / self.max_size)
+		color = gradient_wheel(changeColor(self.color, self.gradient * self.size), 0.4) if self.type \
+			else gradient_wheel(self.color, 0.4 * float(self.max_size - self.size + 1) / self.max_size)
 		self.square.draw_circle(self.pos, self.size, color)
 
 	def grow_grower(self):

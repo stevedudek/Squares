@@ -30,7 +30,7 @@ class XtoY(object):
 
 					x_fact = (x * 2.0 / self.square.width)
 					y_fact = (y * 2.0 / self.square.height)
-					self.square.set_cell((new_x, new_y), gradient_wheel(self.color, interp_func(x_fact ** y_fact)))
+					self.square.set_cell((new_x, new_y), gradient_wheel(self.color, interp_func(x_fact ** y_fact) ** 2))
 
 			if oneIn(self.diagdensity):
 				brick_x = randint(-self.square.height, self.square.width - self.square.height)
