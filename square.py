@@ -2,24 +2,36 @@
 Model to communicate with a Square simulator over a TCP socket
 
 """
+from color import gradient_wheel
+from random import choice, randint
+from math import sin, cos, pi
+from pixel import Pixel
+
+BIG_COORD = [ (0,0), (1,0), (2,0), (3,0) ]
 
 SQUARE_SIZE = 12    # Number of LEDs high/wide for each square
 
 """
+July 2019 Changes
+1. Implement Pixel class in place of hash table
+
+Nov 2018 Changes
+1. No more fades to black, so removed "fract" variable below
+2. Added send_intensity()
+
 Parameters for each Square: (X, Y)
 """
-BIG_COORD = [ (0,0), (1,0), (2,0), (3,0) ]
 
-from random import choice, randint
-from color import HSV, gradient_wheel
-from math import sin, cos, pi
 
 def load_squares(model):
     return Square(model)
 
-class Square(object):
 
+class Square(object):
     """
+    Square object (= square model) represents all LEDs (so all 4 giant squares)
+    Each Square is composed of Pixel objects
+
     Square coordinates are stored in a hash table.
     Keys are (r,p,d) coordinate triples
     Values are (strip, pixel) triples
@@ -30,117 +42,146 @@ class Square(object):
     and values are (r,g,b) colors
     """
     def __init__(self, model):
-        self.model = model
-        self.cellmap = self.add_squares()
-        self.squares = len(BIG_COORD)
-        self.width = self.calc_width()
-        self.height = self.calc_height()
+        # General features of the Squares (such as size)
+        self.squares = len(BIG_COORD)  # number of squares; not sure if this is used
         self.size = (self.width, self.height)
-        self.curr_frame = {}
-        self.next_frame = {}
-        self.init_frames()
+
+        self.model = model
+
+        # cellmap previously was dictionary of { coord: color }
+        # new cellmap implementation is dictionary of { coord: pixel object }
+        self.cellmap = self.add_squares()
 
     def __repr__(self):
         return "Squares: {} x {}".format(self.width, self.height)
 
     def all_cells(self):
-        "Return the list of valid coords"
-        return list(self.cellmap.keys())
+        """Get all valid coordinates"""
+        return self.cellmap.keys()
+
+    def all_pixels(self):
+        """Get all pixel objects"""
+        return self.cellmap.values()
 
     def cell_exists(self, coord):
+        """True if the coordinate is valid"""
         return coord in self.cellmap
 
+    def get_pixel(self, coord):
+        """Get the pixel object associated with the (x,y) coordinate"""
+        return self.cellmap.get(coord)
+
     def inbounds(self, coord):
+        """Is the coordinate inbounds?"""
         (x,y) = coord
-        return (0 <= x < self.width and 0 <= y < self.height)
+        return 0 <= x < self.width and 0 <= y < self.height
 
     def set_cell(self, coord, color, wrap=False):
-        c = self.wrap_coord(coord, wrap)
-        if self.cell_exists(c):
-            self.next_frame[c] = color
+        """Set the pixel at coord (x,y) to color hsv"""
+        if wrap:
+            (x, y) = coord
+            coord = (x % self.width, y % self.height)
+
+        if self.cell_exists(coord):
+            self.get_pixel(coord).set_next_frame(color)
 
     def set_cells(self, coords, color, wrap=False):
+        """Set the pixels at coords to color hsv"""
         for coord in coords:
             self.set_cell(coord, color, wrap)
 
     def set_all_cells(self, color):
-        for c in self.all_cells():
-            self.next_frame[c] = color
+        """Set all cells to color hsv"""
+        for pixel in self.all_pixels():
+            pixel.set_next_frame(color)
 
     def black_cell(self, coord):
-        self.set_cell(coord, HSV(0,0,0))
+        """Blacken the pixel at coord (x,y)"""
+        if self.cell_exists(coord):
+            self.get_pixel(coord).set_black()
 
-    def black_cells(self):
-        self.set_all_cells(HSV(0, 0, 0))
+    def black_all_cells(self):
+        """Blacken all pixels"""
+        for pixel in self.all_pixels():
+            pixel.set_black()
 
     def clear(self):
-        self.set_all_cells(HSV(0, 0, 0.001))
-        self.go()
-        self.black_cells()
+        """Force all cells to black"""
+        for pixel in self.all_pixels():
+            pixel.force_black()
         self.go()
 
+    #
+    # Sending messages to the model: delay, intensity, frame
+    #
     def go(self):
+        """Push the frame to the model"""
         self.send_frame()
         self.model.go()
-        self.update_frame()
 
     def send_delay(self, delay):
+        """Send the delay signal"""
         self.model.send_delay(delay)
 
-    def update_frame(self):
-        for coord in self.next_frame:
-            self.curr_frame[coord] = self.next_frame[coord]
+    def send_intensity(self, intensity):
+        """Send the intensity signal"""
+        self.model.send_intensity(intensity)
 
     def send_frame(self):
-        for coord, color in self.next_frame.items():
-            if self.curr_frame[coord] != color: # Has the color changed? Hashing to color values
-                self.model.set_cell(coord, color)
+        """If a pixel has changed, send its coord + color, then update the pixel's frame"""
+        for pixel in self.all_pixels():
+            if pixel.has_changed():
+                self.model.set_cell(pixel.get_coord(), pixel.get_next_color())
+                pixel.update_frame()
 
-    def force_frame(self):
-        for coord in self.curr_frame:
-            self.curr_frame[coord] = (-1,-1,-1)  # Force update
-
-    def init_frames(self):
-        for coord in self.cellmap:
-            self.curr_frame[coord] = (0,0,0)
-            self.next_frame[coord] = (0,0,0)
-
+    #
+    # Setting up the Square
+    #
     def add_squares(self):
+        """cellmap is a dictionary of { coord: pixel object }
+           could do this as a complicated one-liner, but not worth the obscurity"""
         cellmap = {}
 
         for (BIG_X, BIG_Y) in BIG_COORD:
             for x in range(SQUARE_SIZE):
                 for y in range(SQUARE_SIZE):
-                    cellmap[(x + (BIG_X * SQUARE_SIZE), y + (BIG_Y * SQUARE_SIZE))] = (0,0,0)
+                    x_coord = x + (BIG_X * SQUARE_SIZE)
+                    y_coord = y + (BIG_Y * SQUARE_SIZE)
+                    cellmap[(x_coord, y_coord)] = Pixel(x_coord, y_coord)
         return cellmap
 
-    def calc_height(self):
-        return SQUARE_SIZE * self.big_height()
+    @property
+    def height(self):
+        return SQUARE_SIZE * self.big_height
 
+    @property
     def big_height(self):
-        return (max([y for (x,y) in BIG_COORD]) - min([y for (x,y) in BIG_COORD]) + 1)
+        return max([y for (x,y) in BIG_COORD]) - min([y for (x,y) in BIG_COORD]) + 1
 
-    def calc_width(self):
-        return SQUARE_SIZE * self.big_width()
+    @property
+    def width(self):
+        return SQUARE_SIZE * self.big_width
 
+    @property
     def big_width(self):
-        return (max([x for (x, y) in BIG_COORD]) - min([x for (x, y) in BIG_COORD]) + 1)
-
-    def wrap_coord(self, coord, wrap):
-        (x,y) = coord
-        return (x % self.width, y % self.height) if wrap else coord
+        return max([x for (x, y) in BIG_COORD]) - min([x for (x, y) in BIG_COORD]) + 1
 
     def rand_cell(self):
+        """Pick a random coordinate"""
         return choice(self.cellmap.keys())
 
-    def rand_square(self):
+    @staticmethod
+    def rand_square():
+        """Pick a random big square number"""
         return randint(0, len(BIG_COORD)-1)
 
+    @property
     def num_squares(self):
         return len(BIG_COORD)
 
-    def edges(self, square_num):
-        "Return a list of edges for the particular sq number"
+    @staticmethod
+    def edges(square_num):
+        """Return a list of edges for the particular sq number"""
         (x_offset, y_offset) = get_LL_corner(square_num)
 
         bottom = [(x_offset + x, y_offset) for x in range(SQUARE_SIZE)]
@@ -151,14 +192,18 @@ class Square(object):
         return bottom + top + left + right
 
     def frame_cells(self):
-        "return a list of outer frame cells"
-        return [(x,0) for x in range(self.width)] + [(x,self.height-1) for x in range(self.width)] + \
-               [(0,y) for y in range(self.height)] + [(self.width - 1, y) for y in range(self.height)]
+        """Return a list of outer frame cells"""
+        return [(x, 0) for x in range(self.width)] + \
+               [(x, self.height-1) for x in range(self.width)] + \
+               [(0, y) for y in range(self.height)] + \
+               [(self.width - 1, y) for y in range(self.height)]
 
     def is_on_square(self, square_num, coord):
+        """Is the coordinate on a particular square?"""
         (x, y) = coord
         (x_corner, y_corner) = get_LL_corner(square_num)
-        return x_corner <= x < x_corner + SQUARE_SIZE and y_corner <= y < y_corner + SQUARE_SIZE
+
+        return x_corner <= x < (x_corner + SQUARE_SIZE) and y_corner <= y < (y_corner + SQUARE_SIZE)
 
     def draw_circle(self, center, r, color):
         if r < 1:
@@ -175,40 +220,46 @@ class Square(object):
             color_adj = gradient_wheel(color, float(radius - r + 1) / radius) if fade else color
             self.draw_circle(center, r, color_adj)
 
-##
-## square cell primitives
-##
+
+"""
+square cell primitives
+"""
+
+
 def neighbors(coord):
-    "Returns a list of the four neighboring tuples at a given coordinate"
+    """Returns a list of the four neighboring tuples at a given coordinate"""
     (x,y) = coord
 
-    coords = [ (0, 1), (1, 0), (0, -1), (-1, 0) ]
+    _coords = [ (0, 1), (1, 0), (0, -1), (-1, 0) ]
 
-    return [(x+dx, y+dy) for (dx,dy) in coords]
+    return [(x+dx, y+dy) for (dx,dy) in _coords]
+
 
 def touch_neighbors(coord):
-    "Returns a list of the eight neighboring tuples at a given coordinate"
+    """Returns a list of the eight neighboring tuples at a given coordinate"""
     (x,y) = coord
 
-    coords = [ (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1) ]
+    _coords = [ (0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1) ]
 
-    return [(x+dx, y+dy) for (dx,dy) in coords]
+    return [(x+dx, y+dy) for (dx,dy) in _coords]
+
 
 def square_in_line(coord, direction, distance=0):
     """
-    Returns the coord and all pixels in the direction
-    along the distance
+    Returns the coord and all pixels in the direction along the distance
     """
     return [square_in_direction(coord, direction, x) for x in range(distance)]
 
+
 def square_in_direction(coord, direction, distance=1):
     """
-    Returns the coordinates of the cell in a direction from a given cell.
+    Returns the coordinates of the cell in a direction from a given cell
     Direction is indicated by an integer
     """
     for i in range(distance):
         coord = square_nextdoor(coord, direction)
     return coord
+
 
 def square_nextdoor(coord, direction):
     """
@@ -222,6 +273,7 @@ def square_nextdoor(coord, direction):
     
     return (x+dx, y+dy)
 
+
 def get_rand_neighbor(coord):
     """
     Returns a random neighbors
@@ -229,12 +281,14 @@ def get_rand_neighbor(coord):
     """
     return choice(neighbors(coord))
 
+
 def get_LL_corner(square_num):
     """
     Returns the lower-left coordinate of the square_num
     """
     (big_x, big_y) = BIG_COORD[square_num]
     return (big_x * SQUARE_SIZE, big_y * SQUARE_SIZE)
+
 
 def get_center(square_num):
     """
@@ -244,12 +298,14 @@ def get_center(square_num):
     (x_ll, y_ll) = get_LL_corner(square_num)
     return (x_ll + half_square, y_ll + half_square)
 
+
 def square_shape(coord, size):
     """
     Get the cells of a square whose lower-left corner is at coord
     """
     (x_ll, y_ll) = coord
     return [(x + x_ll, y + y_ll) for x in range(size) for y in range(size)]
+
 
 def mirror_coords(coord, sym=4):
     """

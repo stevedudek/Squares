@@ -1,4 +1,4 @@
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 from HelperFunctions import*
 
 class Sparkles(object):
@@ -7,7 +7,7 @@ class Sparkles(object):
 		self.square = squaremodel
 		self.sparkles = Faders(squaremodel)
 		self.speed = 0.3
-		self.color = randColor()
+		self.color = random_color()
 		self.spark_num = self.square.squares * 20
 
 	def next_frame(self):
@@ -17,12 +17,12 @@ class Sparkles(object):
 		while (True):
 
 			while self.sparkles.num_faders() < self.spark_num:
-				self.sparkles.add_fader(randColorRange(self.color, 0.05), self.square.rand_cell())
+				self.sparkles.add_fader(random_color_range(self.color, 0.05), self.square.rand_cell())
 
 			self.sparkles.cycle_faders()
 
 			# Change the colors
-			if oneIn(100):
-				self.color = randColorRange(self.color, 0.1)
+			if one_in(100):
+				self.color = random_color_range(self.color, 0.1)
 
 			yield self.speed

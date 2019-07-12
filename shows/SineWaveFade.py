@@ -1,14 +1,14 @@
 from HelperFunctions import*
 from color import*
 from math import sin, cos, pi
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 
 class SineWaveFade(object):
 	def __init__(self, squaremodel):
 		self.name = "SineWaveFade"
 		self.square = squaremodel
 		self.speed = 0.2
-		self.color = randColor()
+		self.color = rand_color()
 		self.counter = 0
 		self.wave_speed = randint(1, 10)
 		self.wag_speed = randint(10, 50)
@@ -31,14 +31,14 @@ class SineWaveFade(object):
 					self.square.set_cell((x,y), gradient_wheel(self.color, 0.8 * (1 - (0.2 * abs(y_top - y)))))
 
 			# Change the colors
-			if oneIn(10):
-				self.color = randColorRange(self.color, 0.01)
+			if one_in(10):
+				self.color = random_color_range(self.color, 0.01)
 
-			if oneIn(10):
-				self.color_x = upORdown(self.color_x, 1, 10, 30)
+			if one_in(10):
+				self.color_x = up_or_down(self.color_x, 1, 10, 30)
 
-			if oneIn(10) and waggle == 0:
-				self.freq1 = upORdown(self.freq1, 1, 1, 4)
+			if one_in(10) and waggle == 0:
+				self.freq1 = up_or_down(self.freq1, 1, 1, 4)
 
 			self.counter -= 1
 			yield self.speed  	# random time set in init function

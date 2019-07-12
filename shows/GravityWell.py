@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from random import choice
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 
 class GravityWell(object):
 	def __init__(self, squaremodel):
@@ -8,8 +8,8 @@ class GravityWell(object):
 		self.square = squaremodel
 		self.bricks = Bricks(squaremodel, bounce=False)
 		self.speed = 0.1
-		self.color = randColor()
-		self.dust_color = randColor()
+		self.color = rand_color()
+		self.dust_color = rand_color()
 		self.center = (self.square.width / 2.0, self.square.height / 2.0)
 		self.density = randint(1, 4)
 
@@ -19,13 +19,13 @@ class GravityWell(object):
 
 		while (True):
 
-			if oneIn(self.density):
+			if one_in(self.density):
 				start = choice(self.square.frame_cells())
 				dist = distance(start, self.center)
 				length = 1
 				dx = (self.center[0] - start[0]) / dist
 				dy = (self.center[1] - start[1]) / dist
-				self.bricks.add_brick(randColorRange(self.dust_color, 0.02), 50, start, length, 1, dx, dy, dx, dy)
+				self.bricks.add_brick(random_color_range(self.dust_color, 0.02), 50, start, length, 1, dx, dy, dx, dy)
 
 			self.draw_well()
 			self.bricks.move_bricks(False)
@@ -34,14 +34,14 @@ class GravityWell(object):
 				if distance(b.get_coord(), self.center) <= 1:
 					self.bricks.kill_brick(b)
 
-			if oneIn(10):
-				self.dust_color = randColorRange(self.dust_color, 0.02)
+			if one_in(10):
+				self.dust_color = random_color_range(self.dust_color, 0.02)
 
-			if oneIn(10):
-				self.color = randColorRange(self.color, 0.007)
+			if one_in(10):
+				self.color = random_color_range(self.color, 0.007)
 
-			if oneIn(40):
-				self.density = upORdown(self.density, 1, 1, 4)
+			if one_in(40):
+				self.density = up_or_down(self.density, 1, 1, 4)
 
 			yield self.speed
 

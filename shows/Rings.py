@@ -1,14 +1,14 @@
 from HelperFunctions import*
 from square import*
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 
 class Ball(object):
 	def __init__(self, squaremodel, maincolor):
 		self.square = squaremodel
-		self.color = randColorRange(maincolor, 0.1)
+		self.color = random_color_range(maincolor, 0.1)
 		self.pos = self.square.rand_cell()
 		self.size = randint(5,8)	# Random ball size
-		self.dir = randDir()		# Direction of ball's travel
+		self.dir = rand_dir()		# Direction of ball's travel
 		self.life = randint(50,200)	# how long a ball is around
 	
 	def decrease_life(self):
@@ -33,7 +33,7 @@ class Ball(object):
 				return
 			else:
 				squares -= 1
-				self.dir = randDir()	# Off board. Pick a new direction
+				self.dir = rand_dir()	# Off board. Pick a new direction
 		self.life = 0	# Ball is stuck - kill it
 		return	
 				
@@ -43,7 +43,7 @@ class Rings(object):
         self.square = squaremodel
         self.balls = []	# List that holds Balls objects
         self.speed = 0.14
-        self.maincolor =  randColor()
+        self.maincolor =  rand_color()
 		          
     def next_frame(self):
     	
@@ -56,7 +56,7 @@ class Rings(object):
 				self.balls.append(newball)
 			
 			# Black the screen
-			self.square.black_cells()
+			self.square.black_all_cells()
 			
 			# Draw all the balls
 			# Increase the size of each drop - kill a drop if at full size

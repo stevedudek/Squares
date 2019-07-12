@@ -1,5 +1,3 @@
-from color import RGB, HSV
-
 from HelperFunctions import*
 from square import neighbors
 
@@ -28,7 +26,7 @@ class Bird(object):
 		self.velocity = self.next_velocity
 
 	def draw(self):
-		self.square.set_cell(self.pos, HSV(self.color[0] / 255.0, self.color[1] / 255.0, self.color[2] / 255.0))
+		self.square.set_cell(self.pos, self.color)
 
 	def get_color(self):
 		return self.color
@@ -37,7 +35,7 @@ class Bird(object):
 		return self.velocity
 
 	def set_next_vel(self, next_velocity):
-		self.next_velocity = next_velocity
+		self.next_velocity = [next_velocity[i] + self.next_velocity[i] for i in range(3)]
 
 	def get_neighbors(self):
 		return self.neigh_coords
@@ -89,8 +87,8 @@ class Flock2(object):
 				bird.push_frame()
 				bird.draw()
 
-			if oneIn(200):
-				self.speed = upORdown(self.speed, 0.1, 0.2, 2.0)
+			if one_in(200):
+				self.speed = up_or_down(self.speed, 0.1, 0.2, 2.0)
 			
 			yield self.speed
 

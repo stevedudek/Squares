@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange, RGB
+from color import random_color_range
 from random import choice
 
 class Magnet(object):
@@ -9,11 +9,11 @@ class Magnet(object):
 		self.square = squaremodel
 		self.speed = 0.1
 		self.counter = 0
-		self.color = randColor()
+		self.color = rand_color()
 		(self.a, self.b) = choice([(1,1), (1,2), (3,2), (5,4), (3, pi/2)])
 		self.trail_length = 5
 		self.full_cycle = 3 * 2 * pi
-		self.white = RGB(255, 255, 255)
+		self.white = 255, 255, 255
 		self.bricks = Bricks(squaremodel)
 		self.num_bricks = 80
 		self.brick_length = 2
@@ -23,8 +23,8 @@ class Magnet(object):
 		self.square.clear()
 
 		for i in range(self.num_bricks):
-			self.bricks.add_brick(randColorRange(self.color, 0.15), life=100000, pos=(self.square.rand_cell()),
-							  length=self.brick_length, pitch=0.5, length_x=1, length_y=0, dx=0, dy=0)
+			self.bricks.add_brick(random_color_range(self.color, 0.15), life=100000, pos=(self.square.rand_cell()),
+								  length=self.brick_length, pitch=0.5, length_x=1, length_y=0, dx=0, dy=0)
 
 		while (True):
 

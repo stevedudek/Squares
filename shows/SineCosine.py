@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange, changeColor, dim_color
+from color import random_color, random_color_range, change_color, dim_color
 
 class SineCosine(object):
 	def __init__(self, squaremodel):
@@ -8,8 +8,8 @@ class SineCosine(object):
 		self.square = squaremodel
 		self.sparkles = []  # List that holds Sparkle objects
 		self.speed = 0.2
-		self.color1 = randColor()
-		self.color2 = randColor()
+		self.color1 = rand_color()
+		self.color2 = rand_color()
 		self.counter = 0
 		self.wave_speed = randint(1, 10)
 		self.wag_speed = randint(10, 50)
@@ -25,7 +25,7 @@ class SineCosine(object):
 		self.square.clear()
 
 		while (True):
-			self.square.black_cells()
+			self.square.black_all_cells()
 
 
 			for x in range(self.square.width):
@@ -38,29 +38,29 @@ class SineCosine(object):
 
 				for y in range(self.square.height):
 					if y <= y_sin_top:
-						self.square.set_cell((x, y), dim_color(changeColor(self.color1, (self.color_x * x / 1500.0) + (self.color_y * y / 1500.0)), 0.6))
+						self.square.set_cell((x, y), dim_color(change_color(self.color1, (self.color_x * x / 1500.0) + (self.color_y * y / 1500.0)), 0.6))
 
 					if y <= y_cos_top:
-						self.square.set_cell((x, y), dim_color(changeColor(self.color2, (self.color_x * y / 1500.0) + (self.color_y * x / 1500.0)), 0.3))
+						self.square.set_cell((x, y), dim_color(change_color(self.color2, (self.color_x * y / 1500.0) + (self.color_y * x / 1500.0)), 0.3))
 
 			# Change the colors
-			if oneIn(10):
-				self.color1 = randColorRange(self.color1, 0.007)
+			if one_in(10):
+				self.color1 = random_color_range(self.color1, 0.007)
 
-			if oneIn(2):
-				self.color2 = randColorRange(self.color2, 0.007)
+			if one_in(2):
+				self.color2 = random_color_range(self.color2, 0.007)
 
-			if oneIn(10):
-				self.color_x = upORdown(self.color_x, 1, 1, 30)
+			if one_in(10):
+				self.color_x = up_or_down(self.color_x, 1, 1, 30)
 
-			if oneIn(10):
-				self.color_y = upORdown(self.color_y, 1, 1, 30)
+			if one_in(10):
+				self.color_y = up_or_down(self.color_y, 1, 1, 30)
 
-			if oneIn(200):
-				self.freq1 = upORdown(self.freq1, 2, 2, 8)
+			if one_in(200):
+				self.freq1 = up_or_down(self.freq1, 2, 2, 8)
 
-			if oneIn(200):
-				self.freq2 = upORdown(self.freq2, 2, 2, 8)
+			if one_in(200):
+				self.freq2 = up_or_down(self.freq2, 2, 2, 8)
 
 			self.counter -= 1
 			yield self.speed  	# random time set in init function

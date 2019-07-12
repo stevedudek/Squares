@@ -1,7 +1,7 @@
 from HelperFunctions import*
 from random import choice
 from math import sin, cos, pi
-from color import randColor, randColorRange, changeColor
+from color import random_color, random_color_range, change_color
 
 class Rotater(object):
 	def __init__(self, squaremodel, length, speed, color, pos):
@@ -21,7 +21,7 @@ class Rotater(object):
 			for i in range(self.sym):
 				rad = 2 * 3.14159 * (self.angle + (i * 360 / self.sym)) / 360
 				pos = (round(self.pos[0] + (sin(rad) * l)), round(self.pos[1] + (cos(rad) * l)))
-				self.faders.add_fader(changeColor(self.color, l * 0.01), pos, intense=0.8, growing=False, change=self.change)
+				self.faders.add_fader(change_color(self.color, l * 0.01), pos, intense=0.8, growing=False, change=self.change)
 
 		self.faders.cycle_faders(False)
 
@@ -41,7 +41,7 @@ class Rotaters(object):
 		self.square = squaremodel
 		self.rotaters = []
 		self.speed = 0.1
-		self.color = randColor()
+		self.color = rand_color()
 		self.density = randint(1, 4)
 
 	def next_frame(self):
@@ -50,21 +50,21 @@ class Rotaters(object):
 
 		while (True):
 
-			self.square.black_cells()
+			self.square.black_all_cells()
 
 			while len(self.rotaters) < 7:
 				length = randint(3,10)
-				new_rotater = Rotater(self.square, length, 2 * (11 - length), randColorRange(self.color, 0.2), self.square.rand_cell())
+				new_rotater = Rotater(self.square, length, 2 * (11 - length), random_color_range(self.color, 0.2), self.square.rand_cell())
 				self.rotaters.append(new_rotater)
 
 			for r in self.rotaters:
 				if r.rotate() == False:
 					self.rotaters.remove(r)
 
-			if oneIn(30):
-				self.color = randColorRange(self.color, 0.1)
+			if one_in(30):
+				self.color = random_color_range(self.color, 0.1)
 
-			if oneIn(40):
-				self.density = upORdown(self.density, 1, 1, 4)
+			if one_in(40):
+				self.density = up_or_down(self.density, 1, 1, 4)
 
 			yield self.speed

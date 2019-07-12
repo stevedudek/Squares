@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, randColorRange, changeColor
+from color import random_color, random_color_range, change_color
 from random import choice
 
 class Grower(object):
@@ -7,7 +7,7 @@ class Grower(object):
 		self.square = squaremodel
 		self.size = 0
 		self.max_size = max_size
-		self.color = randColorRange(color, 0.1)
+		self.color = random_color_range(color, 0.1)
 		self.pos = pos
 		self.gradient = gradient
 
@@ -26,7 +26,7 @@ class Concentric2(object):
 		self.growers = []
 		self.max_growers = 10
 		self.speed = 0.2
-		self.color = randColor()
+		self.color = rand_color()
 		self.density = randint(4, 40)
 		self.type = True
 
@@ -36,7 +36,7 @@ class Concentric2(object):
 
 		while (True):
 
-			if len(self.growers) < 10 or oneIn(self.density):
+			if len(self.growers) < 10 or one_in(self.density):
 				pos = (randint(-self.square.height, self.square.width + self.square.height), self.square.height / 2)
 				self.growers.append(Grower(self.square, randint(3, 8), self.color, pos, randint(10, 30) / 500.0))
 
@@ -45,10 +45,10 @@ class Concentric2(object):
 				if g.grow_grower() == False:
 					self.growers.remove(g)
 
-			if oneIn(100):
-				self.color = randColorRange(self.color, 0.02)
+			if one_in(100):
+				self.color = random_color_range(self.color, 0.02)
 
-			if oneIn(40):
-				self.density = upORdown(self.density, 2, 4, 40)
+			if one_in(40):
+				self.density = up_or_down(self.density, 2, 4, 40)
 
 			yield self.speed

@@ -1,6 +1,6 @@
 from HelperFunctions import *
 from square import *
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 
 def create_snake_model(squaremodel):
     return SnakeModel(squaremodel)
@@ -37,7 +37,7 @@ class SnakeModel(object):
         return self.square.cell_exists(coord) and self.get_snake_value(coord) == 0
 
     def get_valid_directions(self, coord):
-        return [d for d in range(0, maxDir, 2) if self.is_open_square(square_in_direction(coord, d, 1))]
+        return [d for d in range(0, MAX_DIR, 2) if self.is_open_square(square_in_direction(coord, d, 1))]
 
     def get_open_spots(self, coord):
         return [cell for cell in neighbors(coord) if self.is_open_square(cell)]
@@ -61,10 +61,10 @@ class SnakeModel(object):
 class Snake(object):
     def __init__(self, squaremodel, maincolor, snakeID, startpos):
         self.square = squaremodel
-        self.color = randColorRange(maincolor, 80)
+        self.color = random_color_range(maincolor, 80)
         self.snakeID = snakeID  # Numeric ID
         self.pos = startpos  # Starting position
-        self.dir = randStraightDir()
+        self.dir = rand_straight_dir()
         self.pathlength = 0
         self.alive = True
 
@@ -81,7 +81,7 @@ class Snakes(object):
         self.nextSnakeID = 0
         self.livesnakes = {}  # Dictionary that holds Snake objects. Key is snakeID.
         self.speed = randint(1, 4) / 10.0
-        self.maincolor = randColor()
+        self.maincolor = rand_color()
         self.num_snakes = randint(1 * self.square.squares, 4 * self.square.squares)
 
     def count_snakes(self):
@@ -100,7 +100,7 @@ class Snakes(object):
                 if startpos:  # Found a valid starting position
                     self.nextSnakeID += 1
                     self.snakemap.put_snake_value(startpos, self.nextSnakeID)
-                    newsnake = Snake(self.square, randColorRange(self.maincolor, 0.2), self.nextSnakeID, startpos)
+                    newsnake = Snake(self.square, random_color_range(self.maincolor, 0.2), self.nextSnakeID, startpos)
                     self.livesnakes[self.nextSnakeID] = newsnake
 
             for id, s in self.livesnakes.iteritems():

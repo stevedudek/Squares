@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, randColorRange, dim_color
+from color import random_color, random_color_range, dim_color
 from math import sin, cos, pi
 
 
@@ -32,7 +32,7 @@ class Grasses(object):
 		self.square = squaremodel
 		self.speed = randint(1, 10) / 20.0
 		self.counter = 0
-		self.color = randColor()
+		self.color = rand_color()
 		self.grasses = []
 		self.num_grass = self.square.width
 		self.counter = 0
@@ -45,12 +45,12 @@ class Grasses(object):
 
 		for i in range(self.num_grass):
 
-			new_grass = Grass(self.square, randColorRange(self.color, 0.06))
+			new_grass = Grass(self.square, random_color_range(self.color, 0.06))
 			self.grasses.append(new_grass)
 
 		while (True):
 
-			self.square.black_cells()
+			self.square.black_all_cells()
 
 			self.wind = self.max_wind * sin(2 * pi * self.counter / 60)
 
@@ -58,8 +58,8 @@ class Grasses(object):
 				g.draw()
 				g.adj_bend(self.wind)
 
-			if oneIn(100):
-				self.speed = upORdown(self.speed, 0.05, 0.05, 0.5)
+			if one_in(100):
+				self.speed = up_or_down(self.speed, 0.05, 0.05, 0.5)
 
 			self.counter += 1
 

@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, randColorRange, changeColor
+from color import random_color, random_color_range, change_color
 
 class BounceCannons2(object):
 	def __init__(self, squaremodel):
@@ -7,8 +7,8 @@ class BounceCannons2(object):
 		self.square = squaremodel
 		self.bricks = Bricks(squaremodel)
 		self.speed = 0.05
-		self.color1 = randColor()
-		self.color2 = changeColor(self.color1, 0.5)
+		self.color1 = rand_color()
+		self.color2 = change_color(self.color1, 0.5)
 		self.density = randint(1, 5)
 		self.length = randint(1,10)
 		          
@@ -18,12 +18,12 @@ class BounceCannons2(object):
 
 		while (True):
 
-			if oneIn(self.density):
-				L_cannon = True if oneIn(2) else False
+			if one_in(self.density):
+				L_cannon = True if one_in(2) else False
 				color = self.color1 if L_cannon else self.color2
 				x_range = randint(5, 44) / 100.0
-				dy = (0.45 - abs(x_range)) * plusORminus()
-				self.bricks.add_brick(randColorRange(color, 0.1), life=200,
+				dy = (0.45 - abs(x_range)) * plus_or_minus()
+				self.bricks.add_brick(random_color_range(color, 0.1), life=200,
 									  pos=(0 if L_cannon else (self.square.width-1), self.square.height / 2),
 									  length=self.length, pitch=0.5, length_x=-0.5 if L_cannon else 0.5,
 									  length_y=0.5 if L_cannon else -0.5,
@@ -37,13 +37,13 @@ class BounceCannons2(object):
 				b.set_length_y(b.get_dy())
 
 			# Change the colors
-			if oneIn(10):
-				self.color1 = randColorRange(self.color1, 0.05)
+			if one_in(10):
+				self.color1 = random_color_range(self.color1, 0.05)
 
-			if oneIn(10):
-				self.color2 = randColorRange(self.color2, 0.03)
+			if one_in(10):
+				self.color2 = random_color_range(self.color2, 0.03)
 
-			if oneIn(100):
-				self.density = upORdown(self.density, 1, 1, 5)
+			if one_in(100):
+				self.density = up_or_down(self.density, 1, 1, 5)
 
 			yield self.speed  	# random time set in init function

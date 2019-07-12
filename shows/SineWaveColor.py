@@ -1,13 +1,13 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange
+from color import random_color_range, dim_color
 
 class SineWaveColor(object):
 	def __init__(self, squaremodel):
 		self.name = "SineWaveColor"
 		self.square = squaremodel
 		self.speed = 0.1
-		self.color = randColor()
+		self.color = rand_color()
 		self.counter = 100000
 		self.wave_speed = randint(1, 10)
 		self.wag_speed = randint(10, 50)
@@ -27,20 +27,19 @@ class SineWaveColor(object):
 				y_top = (sin(angle) * waggle + 0.9) * self.square.height / 2 # (-1 to 1) * (-1 to 1) + 1 = 0 to 2
 
 				for y in range(self.square.height):
-					col_copy = self.color.copy()
-					col_copy.h -= (0.02 * abs(y - y_top))
-					col_copy.v *= 0.3
-					self.square.set_cell((x,y), col_copy)
+					new_h = self.color[0] - (255 * 0.02 * abs(y - y_top))
+					new_color = new_h, self.color[1], self.color[2] * 0.3
+					self.square.set_cell((x,y), new_color)
 
 			# Change the colors
-			if oneIn(10):
-				self.color = randColorRange(self.color, 0.007)
+			if one_in(10):
+				self.color = random_color_range(self.color, 0.007)
 
-			if oneIn(10):
-				self.color_x = upORdown(self.color_x, 1, 10, 30)
+			if one_in(10):
+				self.color_x = up_or_down(self.color_x, 1, 10, 30)
 
-			if waggle == 0 and oneIn(10):
-				self.freq1 = upORdown(self.freq1, 2, 2, 8)
+			if waggle == 0 and one_in(10):
+				self.freq1 = up_or_down(self.freq1, 2, 2, 8)
 
 			self.counter -= 1
 			yield self.speed  	# random time set in init function

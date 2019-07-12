@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from square import*
-from color import randColor, randColorRange
+from color import random_color, random_color_range
         		
 class Dendron(object):
 	def __init__(self, squaremodel, square_num, color, pos, dir, life, longevity):
@@ -23,7 +23,7 @@ class Dendron(object):
 		self.square.set_cells(mirror_coords(self.pos), gradient_wheel(self.color, 0.5 * ratio))
 							
 		# Random chance that path changes
-		if oneIn(4):
+		if one_in(4):
 			self.dir = turn_left_or_right(self.dir)
 	
 	def move_dendron(self):			
@@ -42,7 +42,7 @@ class Dendrons(object):
 		self.square = squaremodel
 		self.livedendrons = []	# List that holds Dendron objects
 		self.speed = 0.02
-		self.maincolor =  randColor()	# Main color of the show
+		self.maincolor =  rand_color()	# Main color of the show
 		self.inversion = randint(0,1)	# Toggle for effects
 		self.longevity = randint(20, 100)
 		          
@@ -52,16 +52,16 @@ class Dendrons(object):
 			
 			# Randomly add a center dendron
 			
-			if len(self.livedendrons) < 20 and oneIn(5):
+			if len(self.livedendrons) < 20 and one_in(5):
 				sq = self.square.rand_square()
-				newdendron = Dendron(self.square, sq, randColorRange(self.maincolor, 0.03), choice(self.square.edges(sq)), maxDir, 0, self.longevity)
+				newdendron = Dendron(self.square, sq, random_color_range(self.maincolor, 0.03), choice(self.square.edges(sq)), MAX_DIR, 0, self.longevity)
 				self.livedendrons.append(newdendron)
 				
 			for d in self.livedendrons:
 				d.draw_dendron(self.inversion)
 				
 				# Chance for branching
-				if oneIn(20):	# Create a fork
+				if one_in(20):	# Create a fork
 					newdir = turn_left_or_right(d.dir)
 					newdendron = Dendron(self.square, sq, d.color, d.pos, newdir, d.life, d.longevity)
 					self.livedendrons.append(newdendron)
@@ -69,13 +69,13 @@ class Dendrons(object):
 				if d.move_dendron() == False:	# dendron has moved off the board
 					self.livedendrons.remove(d)	# kill the branch
 
-			if oneIn(20):
-				self.maincolor = randColorRange(self.maincolor, 0.05)
+			if one_in(20):
+				self.maincolor = random_color_range(self.maincolor, 0.05)
 
-			if oneIn(100):
+			if one_in(100):
 				self.inversion = randint(0, 1)  # Toggle for effects
 
-			if oneIn(10):
-				self.longevity = upORdown(self.longevity, 1, 20, 100)
+			if one_in(10):
+				self.longevity = up_or_down(self.longevity, 1, 20, 100)
 
 			yield self.speed

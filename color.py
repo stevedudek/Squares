@@ -1,243 +1,81 @@
-from random import random
+import colorsys
+from random import random, randint
 
 """
 Color
 
-Color class that can be used interchangably as RGB or HSV with
-seamless translation.  Use whichever is more convenient at the
-time - RGB for familiarity, HSV to fade colors easily
+JULY 2019
 
-RGB values range from 0 to 255
-HSV values range from 0.0 to 1.0
+REWROTE and SIMPLIFIED
+1. Make HSV [0-255]
+2. Colors are now just triples of (hue, sat, value)
 
-    >>> red   = RGB(255, 0 ,0)
-    >>> green = HSV(0.33, 1.0, 1.0)
-
-Colors may also be specified as hexadecimal string:
-
-    >>> blue  = Hex('#0000ff')
-
-Both RGB and HSV components are available as attributes
-and may be set.
-
-    >>> red.r
-    255
-
-    >>> red.g = 128
-    >>> red.rgb
-    (255, 128, 0)
-
-    >>> red.hsv
-    (0.08366013071895424, 1.0, 1.0)
-
-These objects are mutable, so you may want to make a
-copy before changing a Color that may be shared
-
-    >>> red = RGB(255,0,0)
-    >>> purple = red.copy()
-    >>> purple.b = 255
-    >>> red.rgb
-    (255, 0, 0)
-    >>> purple.rgb
-    (255, 0, 255)
-
-Brightness can be adjusted by setting the 'v' property, even
-when you're working in RGB.
-
-For example: to gradually dim a color
-(ranges from 0.0 to 1.0)
-
-    >>> col = RGB(0,255,0)
-    >>> while col.v > 0:
-    ...   print col.rgb
-    ...   col.v -= 0.1
-    ...
-    (0, 255, 0)
-    (0, 229, 0)
-    (0, 204, 0)
-    (0, 178, 0)
-    (0, 153, 0)
-    (0, 127, 0)
-    (0, 102, 0)
-    (0, 76, 0)
-    (0, 51, 0)
-    (0, 25, 0)
-    (0, 0, 0)
-
+JULY 2019
+Consider rewriting this API to use less memory
+Remove unused functions
+Try to keep the surrounding API
 """
-import colorsys
-from copy import deepcopy
 
-__all__=['RGB', 'HSV', 'Hex', 'Color']
 
-def clamp(val, min_value, max_value):
-    "Restrict a value between a minimum and a maximum value"
-    return max(min(val, max_value), min_value)
+def _float_to_byte(f):
+    """Convert a [0.0-1.0] float to a [0-255] byte"""
+    return int(f * 255) % 256
 
-def is_hsv_tuple(hsv):
-    "check that a tuple contains 3 values between 0.0 and 1.0"
-    return len(hsv) == 3 and all([(0.0 <= t <= 1.0) for t in hsv])
 
-def is_rgb_tuple(rgb):
-    "check that a tuple contains 3 values between 0 and 255"
-    return len(rgb) == 3 and all([(0 <= t <= 255) for t in rgb])
+def _float_to_byte_triple(triple):
+    """Convert 3 [0.0-1.0] floats to 3 [0-255] bytes"""
+    return _float_to_byte(triple[0]), _float_to_byte(triple[1]), _float_to_byte(triple[2]) 
+
+    
+def _byte_to_float(b):
+    """Convert a [0-255] byte to a [0.0-1.0] float"""
+    return (int(b) % 256) / 255.0
+
+
+def _byte_to_float_triple(triple):
+    """Convert 3 [0-255] bytes to 3 [0.0-1.0] floats"""
+    return _byte_to_float(triple[0]), _byte_to_float(triple[1]), _byte_to_float(triple[2])
+
 
 def rgb_to_hsv(rgb):
-    "convert a rgb[0-255] tuple to hsv[0.0-1.0]"
-    f = float(255)
-    return colorsys.rgb_to_hsv(rgb[0]/f, rgb[1]/f, rgb[2]/f)
+    """convert a rgb[0-255] tuple to hsv[0-255]"""
+    _r, _g, _b = _byte_to_float_triple(rgb)
+    return _float_to_byte_triple(colorsys.rgb_to_hsv(_r, _g, _b))
+
 
 def hsv_to_rgb(hsv):
-    assert is_hsv_tuple(hsv), "malformed hsv tuple:" + str(hsv)
-    _rgb = colorsys.hsv_to_rgb(*hsv)
-    r = int(_rgb[0] * 0xff)
-    g = int(_rgb[1] * 0xff)
-    b = int(_rgb[2] * 0xff)
-    return (r,g,b)
+    """convert a hsv[0-255] tuple to rgb[0-255]"""
+    _h, _s, _v = _byte_to_float_triple(hsv)
+    return _float_to_byte_triple(colorsys.hsv_to_rgb(_h, _s, _v))
 
-def RGB(r,g,b):
-    "Create a new RGB color"
-    t = (r,g,b)
-    assert is_rgb_tuple(t)
-    return Color(rgb_to_hsv(t))
 
-def HSV(h,s,v):
-    "Create a new HSV color"
-    t = (h,s,v)
-    assert is_hsv_tuple(t)
-    return Color(t)
+def random_color(reds=False):
+    """return a random, saturated hsv color. reds are 192-32"""
+    _hue = randint(192, 287) % 255 if reds else randint(0, 255)
+    return _hue, 255, 255
 
-def Hex(value):
-    "Create a new Color from a hex string"
-    value = value.lstrip('#')
-    lv = len(value)
-    rgb_t = (int(value[i:i+lv/3], 16) for i in range(0, lv, lv/3))
-    return RGB(*rgb_t)
 
-class Color(object):
-    def __init__(self, hsv_tuple):
-        self.set_hsv(hsv_tuple[0], hsv_tuple[1], hsv_tuple[2])
-
-    def copy(self):
-        return deepcopy(self)
-
-    def set_hsv(self, h, s, v):
-        t = (h,s,v)
-        assert is_hsv_tuple(t)
-        self.hsv_t = t
-        self.rgb_t = hsv_to_rgb(t)
-
-    def set_rgb(self, r, g, b):
-        t = (r,g,b)
-        assert is_rgb_tuple(t)
-        self.hsv_t = rgb_to_hsv(t)
-        self.rgb_t = t
-
-    @property
-    def rgb(self):
-        "returns a rgb[0-255] tuple"
-        return self.rgb_t
-
-    @property
-    def hsv(self):
-        "returns a hsv[0.0-1.0] tuple"
-        return self.hsv_t
-
-    @property
-    def hex(self):
-        "returns a hexadecimal string"
-        return '#%02x%02x%02x' % self.rgb_t
-
-    """
-    Properties representing individual HSV compnents
-    Adjusting 'H' shifts the color around the color wheel
-    Adjusting 'S' adjusts the saturation of the color
-    Adjusting 'V' adjusts the brightness/intensity of the color
-    """
-    @property
-    def h(self):
-        return self.hsv_t[0]
-
-    @h.setter
-    def h(self, val):
-        h = clamp(val, 0.0, 1.0)
-        self.set_hsv(h, self.s, self.v)
-
-    @property
-    def s(self):
-        return self.hsv_t[1]
-
-    @s.setter
-    def s(self, val):
-        s = clamp(val, 0.0, 1.0)
-        self.set_hsv(self.h, s, self.v)
-
-    @property
-    def v(self):
-        return self.hsv_t[2]
-
-    @v.setter
-    def v(self, val):
-        v = clamp(val, 0.0, 1.0)
-        self.set_hsv(self.h, self.s, v)
-
-    """
-    Properties representing individual RGB components
-    """
-    @property
-    def r(self):
-        return self.rgb[0]
-
-    @r.setter
-    def r(self, val):
-        assert 0 <= val <= 255
-        self.set_rgb(val, self.g, self.b)
-
-    @property
-    def g(self):
-        return self.rgb[1]
-
-    @g.setter
-    def g(self, val):
-        assert 0 <= val <= 255
-        self.set_rgb(self.r, val, self.b)
-
-    @property
-    def b(self):
-        return self.rgb[2]
-
-    @b.setter
-    def b(self, val):
-        assert 0 <= val <= 255
-        self.set_rgb(self.r, self.g, val)
-
-if __name__=='__main__':
-    import doctest
-    doctest.testmod()
-
-def randColor(REDS=False):
-    "return a random, saturated hsv color"
-    hue = adj_value(0.1 + ((random() - 0.5) / 5)) if REDS else random()
-    return HSV(hue, 1.0, 1.0)
-
-def randColorRange(hsv, shift_range=0.3):
+def random_color_range(hsv, shift_range=0.3):
     """Returns a random color around a given color within a particular range
        Function is good for selecting blues, for example"""
-    if shift_range > 0.5:
-        shift_range = 0.5
-    new_h = (random() - 0.5) * shift_range * 2
-    return HSV(adj_value(hsv.h + new_h), hsv.s, hsv.v)
+    _delta_h = (random() - 0.5) * min([0.5, shift_range]) * 2
+    _new_h = _float_to_byte( _byte_to_float(hsv[0]) + _delta_h)
+    return _new_h, hsv[1], hsv[2]
+
 
 def gradient_wheel(hsv, intensity):
-    """Dim an hsv color with v=intensity"""
-    return HSV(hsv.h, hsv.s, clamp(intensity, 0.0, 1.0))
+    """Dim an hsv color with v=intensity [0.0-1.0]"""
+    intensity = max([min([intensity, 1]), 0])
+    return hsv[0], hsv[1], _float_to_byte(intensity)
 
-def changeColor(hsv, amount):
-    """Change color by a 0-1.0 range. Amount can be negative"""
-    return HSV(adj_value(hsv.h + amount), hsv.s, hsv.v)
+
+def change_color(hsv, amount):
+    """Change color by a 0.0-1.0 range. Amount can be negative"""
+    return (hsv[0] + _float_to_byte(amount)), hsv[1], hsv[2]
+
 
 def restrict_color(hsv, hue, hue_range=0.05):
-    "restrict a color with 0-1.0 starting hue to hue +/- range. Use this to set reds, blues, etc."
+    """restrict a color with 0-1.0 starting hue to hue +/- range. Use this to set reds, blues, etc."""
 
     # red = 0.0
     # orange = 0.083
@@ -249,53 +87,12 @@ def restrict_color(hsv, hue, hue_range=0.05):
     # purple = 0.79
     # red purple = 0.92
 
-    if hue_range > 0.5:
-        hue_range = 0.5
-    new_h = (hue - hue_range) + (hsv.h * 2 * hue_range)
-    return HSV(adj_value(new_h), hsv.s, hsv.v)
+    hue_range = _float_to_byte(min[(hue_range, 0.5)])
+    _new_h = (hue - hue_range) + (hsv[0] * 2 * hue_range)
+    return _new_h % 255, hsv[1], hsv[2]
+
 
 def dim_color(hsv, amount):
-    "dim an hsv color by a 0-1.0 range"
-    return HSV(hsv.h, hsv.s, amount * hsv.v)
-
-def adj_value(value):
-    "keep value 0-1.0, folding values back if necessary"
-    while value > 1.0:
-        value -= 1.0
-    while value < 0.0:
-        value += 1.0
-    return value
-
-def rgb_morph(rgb1, rgb2):
-    "interpolate between two rgb's"
-    return hsv_to_rgb(hsv_morph(rgb_to_hsv(rgb1), rgb_to_hsv(rgb2)))
-
-def hsv_morph(hsv1, hsv2):
-    "interpolate between two hsv's"
-    return HSV(interpolate(hsv1.h, hsv2.h),
-               interpolate(hsv1.s, hsv2.s),
-               interpolate(hsv1.v, hsv2.v))
-
-def hsv_multi_morph(hsvs, drop_zero=False):
-    "interpolate between many hsv's"
-    hsv_cull = [hsv for hsv in hsvs if hsv.v > 0] if drop_zero else hsvs
-
-    if len(hsv_cull) == 0:
-        return hsvs[0]
-
-    if len(hsv_cull) == 1:
-        return hsv_cull[0]
-
-    if len(hsv_cull) == 2:
-        return hsv_morph(hsv_cull[0], hsv_cull[1])
-
-    v = sum([hsv.v for hsv in hsv_cull])
-    v = v if v <= 1.0 else 1.0
-    return HSV(average([hsv.h for hsv in hsv_cull]), average([hsv.s for hsv in hsv_cull]), v)
-    # return HSV(max([hsv.h for hsv in hsv_cull]), average([hsv.s for hsv in hsv_cull]), v)
-
-def interpolate(val1, val2):
-    return val1 + ((val2 - val1) / 2.0)
-
-def average(val):
-    return sum(val) / len(val)
+    """dim an hsv color by a 0-1.0 range"""
+    amount = max([min([amount, 1]), 0])
+    return hsv[0], hsv[1], int(hsv[2] * amount)

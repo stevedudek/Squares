@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 
 class Packets(object):
 	def __init__(self, squaremodel):
@@ -8,7 +8,7 @@ class Packets(object):
 		self.square = squaremodel
 		self.sparkles = Faders(squaremodel)
 		self.speed = 0.2
-		self.color = randColor()
+		self.color = rand_color()
 		self.counter = 0
 		self.wave_speed = randint(1, 10)
 		self.wag_speed = randint(10, 50)
@@ -22,7 +22,7 @@ class Packets(object):
 		self.square.clear()
 
 		while (True):
-			self.square.black_cells()
+			self.square.black_all_cells()
 
 			waggle = sin(2 * pi * self.get_fract(self.counter, self.wag_speed))  # Up and Down motion results = -1 to +1
 			y_off = int(waggle * self.square.height * 0.5)
@@ -34,20 +34,20 @@ class Packets(object):
 
 				for y in range(self.square.height):
 					if y_bottom <= y <= y_top:
-						color = randColorRange(self.color, (self.color_x * x / 3000.0) + (self.color_y * y / 3000.0))
+						color = random_color_range(self.color, (self.color_x * x / 3000.0) + (self.color_y * y / 3000.0))
 						self.sparkles.add_fader(color, (x, y + y_off), intense=1.0, growing=False, change=self.decay)
 
 			self.sparkles.cycle_faders()
 
 			# Change the colors
-			if oneIn(10):
-				self.color = randColorRange(self.color, 0.007)
+			if one_in(10):
+				self.color = random_color_range(self.color, 0.007)
 
-			if oneIn(10):
-				self.color_x = upORdown(self.color_x, 2, 1, 30)
+			if one_in(10):
+				self.color_x = up_or_down(self.color_x, 2, 1, 30)
 
-			if oneIn(10):
-				self.color_y = upORdown(self.color_y, 2, 1, 30)
+			if one_in(10):
+				self.color_y = up_or_down(self.color_y, 2, 1, 30)
 
 			self.counter -= 1
 			yield self.speed  	# random time set in init function

@@ -1,5 +1,5 @@
 from random import choice
-from color import randColor, changeColor, dim_color
+from color import random_color, change_color, dim_color
 
 from HelperFunctions import*
 from square import touch_neighbors
@@ -10,7 +10,7 @@ class GameOfLife(object):
 		self.square = squaremodel
 		self.speed = randint(2, 20) / 10.0
 		self.counter = 0
-		self.color = randColor()
+		self.color = random_color()
 		self.cellmap = {}
 		self.min_start = self.square.squares * 20
 		self.max_start = self.square.squares * 100
@@ -33,16 +33,16 @@ class GameOfLife(object):
 			if self.counter % 400 == 0 or \
 					(len(before_cells) == len(after_cells) and len(before_cells) < 10 * self.square.squares):	# Have cells changed?
 				self.square.clear()
-				self.color = randColor()
+				self.color = random_color()
 				for i in range(randint(self.min_start, self.max_start)):
 					self.light_square(choice(self.cellmap.keys()))
 				yield self.speed
 
 			self.counter += 1
-			self.color = changeColor(self.color, 0.02)
+			self.color = change_color(self.color, 0.02)
 
-			if oneIn(200):
-				self.speed = upORdown(self.speed, 0.1, 0.2, 2.0)
+			if one_in(200):
+				self.speed = up_or_down(self.speed, 0.1, 0.2, 2.0)
 			
 			yield self.speed
 

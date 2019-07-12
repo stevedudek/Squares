@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 from random import choice
 
 class Lissajous(object):
@@ -9,7 +9,7 @@ class Lissajous(object):
 		self.square = squaremodel
 		self.speed = 0.2
 		self.counter = 0
-		self.color = randColor()
+		self.color = rand_color()
 		(self.a, self.b) = choice([(1, 2), (3, 2), (5, 4), (1.5, 0), (3, pi / 2)])
 		self.repeat = choice([1, 2, 3, 4, 6, 8])
 		self.trail_length = int(100 / self.repeat)
@@ -21,7 +21,7 @@ class Lissajous(object):
 
 		while (True):
 
-			self.square.black_cells()
+			self.square.black_all_cells()
 
 			for i in reversed(range(self.trail_length)):
 				intense = 1.0 - (float(i) / self.trail_length)
@@ -42,9 +42,9 @@ class Lissajous(object):
 				self.counter -= self.full_cycle
 				self.trail_length = randint(10,200)
 				(self.a, self.b) = choice([(1,1), (1,2), (3,2), (5,4), (3, pi/2)])
-				self.color = randColorRange(self.color, 10)
+				self.color = random_color_range(self.color, 10)
 				self.repeat = choice([1, 2, 3, 4, 6, 8])
 
-			self.color = randColorRange(self.color, 0.01)
+			self.color = random_color_range(self.color, 0.01)
 
 			yield self.speed

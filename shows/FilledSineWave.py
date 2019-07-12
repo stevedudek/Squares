@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, randColorRange, changeColor, dim_color
+from color import random_color, random_color_range, change_color, dim_color
 from math import sin, cos, pi
 
 class FilledSineWave(object):
@@ -8,7 +8,7 @@ class FilledSineWave(object):
 		self.square = squaremodel
 		self.sparkles = []  # List that holds Sparkle objects
 		self.speed = 0.1
-		self.color = randColor()
+		self.color = rand_color()
 		self.counter = 0
 		self.wave_speed = randint(1, 10)
 		self.wag_speed = randint(40, 80)
@@ -20,7 +20,7 @@ class FilledSineWave(object):
 	def next_frame(self):
 
 		while (True):
-			self.square.black_cells()
+			self.square.black_all_cells()
 
 			for x in range(self.square.width):
 				waggle = sin(2 * pi * self.get_fract(self.counter, self.wag_speed))  # Up and Down motion results = -1 to +1
@@ -29,17 +29,17 @@ class FilledSineWave(object):
 
 				for y in range(self.square.height):
 					if y <= y_top:
-						self.square.set_cell((x,y), dim_color(changeColor(self.color, (self.color_x * x / 1000.0) + (self.color_y * y / 1000.0)), 0.5))
+						self.square.set_cell((x,y), dim_color(change_color(self.color, (self.color_x * x / 1000.0) + (self.color_y * y / 1000.0)), 0.5))
 
 			# Change the colors
-			if oneIn(10):
-				self.color = randColorRange(self.color, 0.005)
+			if one_in(10):
+				self.color = random_color_range(self.color, 0.005)
 
-			if oneIn(10):
-				self.color_x = upORdown(self.color_x, 1, 1, 30)
+			if one_in(10):
+				self.color_x = up_or_down(self.color_x, 1, 1, 30)
 
-			if oneIn(10):
-				self.color_y = upORdown(self.color_y, 1, 1, 30)
+			if one_in(10):
+				self.color_y = up_or_down(self.color_y, 1, 1, 30)
 
 			self.counter -= 1
 			yield self.speed  	# random time set in init function

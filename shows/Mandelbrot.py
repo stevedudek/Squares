@@ -1,13 +1,16 @@
 from HelperFunctions import*
+from color import change_color
 
 class Mandelbrot(object):
 	def __init__(self, squaremodel):
 		self.name = "Mandelbrot"
 		self.square = squaremodel
-		self.color = randColor()
+		self.color = rand_color()
 		self.maxiter = 80
 		self.speed = 0.1
-		self.center = (-1.5 / 2, 0.070)
+		# self.center = ( -0.745428, 0.113009)
+		# self.center = (-1.25066,  0.02012)
+		self.center = (-0.235125, 0.827215)
 		self.counter = 0
 		          
 	def next_frame(self):
@@ -18,7 +21,7 @@ class Mandelbrot(object):
 			for x in range(self.square.width):
 				for y in range(self.square.height):
 					value = fractal[x,y]
-					color = wheel(self.color + (value * 20)) if value < self.maxiter else (0, 0, 0)
+					color = change_color(self.color, value * 20) if value < self.maxiter else (0, 0, 0)
 					self.square.set_cell((x,y), color)
 
 			self.counter += 1

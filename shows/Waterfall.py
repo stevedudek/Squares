@@ -1,5 +1,5 @@
 from HelperFunctions import*
-from color import randColor, randColorRange, changeColor
+from color import random_color, random_color_range, change_color
 
 class Waterfall(object):
 	def __init__(self, squaremodel):
@@ -7,8 +7,8 @@ class Waterfall(object):
 		self.square = squaremodel
 		self.bricks = Bricks(squaremodel, bounce=False)
 		self.speed = 0.1
-		self.color1 = randColor()
-		self.color2 = changeColor(self.color1, 0.5)
+		self.color1 = rand_color()
+		self.color2 = change_color(self.color1, 0.5)
 		self.density = randint(2, 5)
 		self.accel = randint(1, 10)
 		self.fade = randint(1, 5)
@@ -20,12 +20,12 @@ class Waterfall(object):
 		while (True):
 
 			for i in range(self.density):
-				L_cannon = True if oneIn(2) else False
+				L_cannon = True if one_in(2) else False
 				color = self.color1 if L_cannon else self.color2
 				x_range = randint(1, 20) / 20.0
 				x = 0 if L_cannon else (self.square.width-1)
 
-				self.bricks.add_brick(randColorRange(color, 0.05), life=self.square.width,
+				self.bricks.add_brick(random_color_range(color, 0.05), life=self.square.width,
 									  pos=(x, self.square.height - 3),
 									  length=0, pitch=1, length_x=0, length_y=0,
 									  dx=x_range if L_cannon else -x_range, dy=0,
@@ -40,19 +40,19 @@ class Waterfall(object):
 					b.set_y(0)
 
 			# Change the colors
-			if oneIn(10):
-				self.color1 = randColorRange(self.color1, 0.01)
+			if one_in(10):
+				self.color1 = random_color_range(self.color1, 0.01)
 
-			if oneIn(10):
-				self.color2 = randColorRange(self.color2, 0.02)
+			if one_in(10):
+				self.color2 = random_color_range(self.color2, 0.02)
 
-			if oneIn(100):
-				self.density = upORdown(self.density, 1, 2, 5)
+			if one_in(100):
+				self.density = up_or_down(self.density, 1, 2, 5)
 
-			if oneIn(100):
-				self.accel = upORdown(self.accel, 1, 1, 10)
+			if one_in(100):
+				self.accel = up_or_down(self.accel, 1, 1, 10)
 
-			if oneIn(100):
-				self.fade = upORdown(self.fade, 1, 1, 5)
+			if one_in(100):
+				self.fade = up_or_down(self.fade, 1, 1, 5)
 
 			yield self.speed

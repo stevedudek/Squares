@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 from random import choice
 
 class TwoWaves(object):
@@ -9,8 +9,8 @@ class TwoWaves(object):
 		self.square = squaremodel
 		self.sparkles = Faders(squaremodel)
 		self.speed = 0.1
-		self.color1 = randColor()
-		self.color2 = randColor()
+		self.color1 = rand_color()
+		self.color2 = rand_color()
 		self.counter = 0
 		self.freq1 = choice([0.5, 1, 2, 4])
 		self.freq2 = choice([0.5, 1, 2, 4])
@@ -28,17 +28,17 @@ class TwoWaves(object):
 				y2 = round((cos((x + self.counter) / (self.freq2 * pi)) * waggle2 + 1) * (self.square.height-1) / 2)
 
 				for i in range(2):
-					self.sparkles.add_fader(randColorRange(self.color1, 0.02), (x - i, y), 0.5, False, 0.05)
-					self.sparkles.add_fader(randColorRange(self.color2, 0.02), (x - i, y2), 0.5, False, 0.05)
+					self.sparkles.add_fader(random_color_range(self.color1, 0.02), (x - i, y), 0.5, False, 0.05)
+					self.sparkles.add_fader(random_color_range(self.color2, 0.02), (x - i, y2), 0.5, False, 0.05)
 
 			self.sparkles.cycle_faders()
 
 			# Change the colors
-			if oneIn(10):
-				self.color1 = randColorRange(self.color1, 0.01)
+			if one_in(10):
+				self.color1 = random_color_range(self.color1, 0.01)
 
-			if oneIn(5):
-				self.color2 = randColorRange(self.color2, 0.01)
+			if one_in(5):
+				self.color2 = random_color_range(self.color2, 0.01)
 
 			self.counter -= 1
 			yield self.speed  	# random time set in init function

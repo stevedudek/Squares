@@ -3,88 +3,76 @@ Model to communicate with a Square simulator over a TCP socket
 
 """
 import socket
-from color import restrict_color
+from HelperFunctions import byte_clamp
 
-# "off" color for simulator
-SIM_DEFAULT = (188,210,229) # BCD2E5
 
 class SimulatorModel(object):
-    def __init__(self, hostname, port=4444, debug=False):
+    def __init__(self, hostname, channel, port=4444, debug=False):
         self.server = (hostname, port)
-        self.debug = debug
+        self.channel = channel  # Which of 2 channels
+        self.debug = False
         self.sock = None
-
-        # list of (strip,pixel) to be sent on the next call to go
-        self.dirty = {}
-
+        self.dirty = {}  # { coord: color } map to be sent on the next call to "go"
         self.connect()
 
     def connect(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect(self.server)
-        # XXX throw an exception if the socket isn't available?
 
     def __repr__(self):
-        return "Square Model(%s, port=%d, debug=%s)" % (self.server[0], self.server[1], self.debug)
+        return "Square Model Channel {} ({}, port={}, debug={})".format(self.channel,
+                                                                          self.server[0],
+                                                                          self.server[1],
+                                                                          self.debug)
+
+    def get_channel(self):
+        return self.channel
 
     # Model basics
 
     def set_cell(self, cell, color):
-        "Set a (x,y) coord to a color"
+        """Set the model's coord to a color"""
         self.dirty[cell] = color
 
-    def set_cells(self, cells, color):
-        "Set all fixtures in a list of coordinates to a color"
-        for cell in cells:
-            self.set_cell(cell, color)
-
     def go(self):
-        "Send all of the buffered commands"
+        """Send all of the buffered commands"""
         self.send_start()
-
         for (cell, color) in self.dirty.items():
-            (x,y) = cell
-            (r,g,b) = self.translate_color(color)
-            
-            msg = "%s,%s,%s,%s,%s" % (x,y,r,g,b)
-            
+            (x, y) = cell
+            h, s, b = byte_clamp(color[0], wrap=True), byte_clamp(color[1]), byte_clamp(color[2])
+            msg = "{}{},{},{},{},{}".format(self.channel, x,y, h,s,b)
+
             if self.debug:
-                print msg
+                print (msg)
             self.sock.send(msg)
             self.sock.send('\n')
 
-        self.dirty = {}
+        self.dirty = {}  # Restart the dirty dictionary
 
     def send_start(self):
-        "send a start signal"
-        msg = "X"   # tell processing that commands are coming
+        """send a start signal"""
+        msg = "{}X".format(self.channel)  # tell processing that commands are coming
 
         if self.debug:
-            print msg
+            print (msg)
         self.sock.send(msg)
         self.sock.send('\n')
 
     def send_delay(self, delay):
-        "send a morph amount in milliseconds"
-        msg = "D%s" % (str(int(delay * 1000)))
+        """send a morph amount in milliseconds"""
+        msg = "{}D{}".format(self.channel, str(int(delay * 1000)))
 
         if self.debug:
-            print msg
+            print (msg)
         self.sock.send(msg)
         self.sock.send('\n')
 
-    def relay_OSC_cmd(self, cmd, value):
-        "Relay to Processing the OSC command"
-        msg = "OSC,%s,%s" % (cmd,value)
+    def send_intensity(self, intensity):
+        """send an intensity amount (0-255)"""
+        msg = "{}I{}".format(self.channel, str(intensity))
 
         if self.debug:
-            print msg
+            print (msg)
+        self.sock.send('\n')
         self.sock.send(msg)
         self.sock.send('\n')
-
-    def translate_color(self, color):
-        """Convert the hsv color object into rgb"""
-        return (color.r, color.g, color.b)
-        # corrected = restrict_color(color, -0.05, 0.15) # RED clipping happens here
-        # corrected = color
-        # return (corrected.r, corrected.g, corrected.b)

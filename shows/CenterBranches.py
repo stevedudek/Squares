@@ -1,4 +1,4 @@
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 from HelperFunctions import*
 from square import*
 
@@ -21,7 +21,7 @@ class Branch(object):
 		self.square.set_cell(self.pos, gradient_wheel(self.color, 0.5 * ratio))
 							
 		# Random chance that path changes
-		if oneIn(3):
+		if one_in(3):
 			self.dir = turn_left_or_right(self.dir)
 	
 	def move_branch(self):			
@@ -39,7 +39,7 @@ class CenterBranches(object):
 		self.square = squaremodel
 		self.livebranches = []	# List that holds Branch objects
 		self.speed = 0.03
-		self.maincolor = randColor()
+		self.maincolor = random_color()
 		self.inversion = randint(0,1)	# Toggle for effects
 		self.fork = randint(5,30)
 		self.decay = randint(4,20)
@@ -50,16 +50,16 @@ class CenterBranches(object):
 			
 			# Add a center branch
 			
-			if len(self.livebranches) == 0 or oneIn(3):
+			if len(self.livebranches) == 0 or one_in(3):
 				sq = self.square.rand_square()  # Pick a random Square
-				newbranch = Branch(self.square, sq, self.maincolor, get_center(sq), randDir(), 0, self.decay)
+				newbranch = Branch(self.square, sq, self.maincolor, get_center(sq), rand_dir(), 0, self.decay)
 				self.livebranches.append(newbranch)
 				
 			for b in self.livebranches:
 				b.draw_branch(self.inversion)
 				
 				# Chance for branching
-				if oneIn(self.fork):	# Create a fork
+				if one_in(self.fork):	# Create a fork
 					newdir = turn_left_or_right(b.dir)
 					newbranch = Branch(self.square, b.square_num, b.color, b.pos, newdir, b.life, b.decay)
 					self.livebranches.append(newbranch)
@@ -67,16 +67,16 @@ class CenterBranches(object):
 				if b.move_branch() == False:	# branch has moved off the board
 					self.livebranches.remove(b)	# kill the branch
 
-			if oneIn(10):
-				self.decay = upORdown(self.decay, 1, 4, 20)
+			if one_in(10):
+				self.decay = up_or_down(self.decay, 1, 4, 20)
 
-			if oneIn(10):
-				self.fork = upORdown(self.fork, 1, 5, 30)
+			if one_in(10):
+				self.fork = up_or_down(self.fork, 1, 5, 30)
 
-			if oneIn(20):
-				self.maincolor = randColorRange(self.maincolor, 0.05)
+			if one_in(20):
+				self.maincolor = random_color_range(self.maincolor, 0.05)
 
-			if oneIn(500):
+			if one_in(500):
 				self.inversion = randint(0, 1)  # Toggle for effects
 
 			yield self.speed

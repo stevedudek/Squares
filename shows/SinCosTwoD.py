@@ -1,13 +1,13 @@
 from HelperFunctions import*
 from math import sin, cos, pi
-from color import randColor, randColorRange
+from color import random_color, random_color_range
 
 class SinCosTwoD(object):
 	def __init__(self, squaremodel):
 		self.name = "SinCosTwoD"
 		self.square = squaremodel
 		self.speed = 0.15
-		self.color = randColor()
+		self.color = rand_color()
 		self.counter = 0
 		self.repeat = randint(1,4)
 		self.wag_speed = randint(20, 50)
@@ -28,12 +28,12 @@ class SinCosTwoD(object):
 
 					self.square.set_cell((x, y), gradient_wheel(self.color, spread))
 
-			if waggle == 0 and oneIn(10):
-				self.repeat = upORdown(self.repeat, 1, 1, 4)
+			if waggle == 0 and one_in(10):
+				self.repeat = up_or_down(self.repeat, 1, 1, 4)
 
 			# Change the colors
-			if oneIn(10):
-				self.color = randColorRange(self.color, 0.007)
+			if one_in(10):
+				self.color = random_color_range(self.color, 0.007)
 
 			self.counter += 1
 			yield self.speed

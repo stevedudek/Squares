@@ -34,10 +34,10 @@ int[][] BigSquareCoord = {
 // Second value is Direction of lights (0->1) from connector as viewed from corner:
 // 'L' = Left, 'R' = Right
 char[][] connectors = {
-  {'Z','L'},  // Square 1
-  {'Z','L'},  // Square 2
-  {'A','L'},  // Square 3
-  {'Z','L'}   // Square 4
+  {'Z','R'},  // Square 1
+  {'S','L'},  // Square 2
+  {'A','R'},  // Square 3
+  {'A','R'}   // Square 4
 };
 
 // Wiring diagram - needs to be the same for all fabricated Squares
@@ -891,7 +891,9 @@ void sendColorOut(byte x, byte y, char r, char g, char b, boolean morph) {
 //
 // Get ready for the next morph cycle by:
 void finishCycle() {
-  morph_frame(1.0);
+  if (old_morph < 1.0) {
+    morph_frame(1.0);
+  }
   pushColorBuffer();
   start_time = millis();  // reset the clock
 }
@@ -908,7 +910,8 @@ void update_morph() {
     return;  // Already finished all morphing - waiting for next command 
   }
   last_time = millis();  // update clock
-  morph_frame((last_time - start_time) / (float)delay_time); 
+  float morph = (last_time - start_time) / (float)delay_time;
+  morph_frame(morph);
 }
   
 //
@@ -920,9 +923,7 @@ void morph_frame(float fract) {
   if (fract > 1.0) {  // Can't morph greater than 1
     fract = 1.0;
   }
-  if (abs(fract - old_morph) < 0.01) {  // Avoid small morph changes
-   return;
-  }
+
   old_morph = fract;
   
   char r,g,b;

@@ -1,6 +1,6 @@
 from HelperFunctions import*
 from square import*
-from color import randColor, randColorRange, changeColor
+from color import random_color, random_color_range, change_color
         		
 class Branch(object):
 	def __init__(self, squaremodel, square_num, color, pos, dir, life):
@@ -29,8 +29,8 @@ class Branches(object):
 		self.square = squaremodel
 		self.livebranches = []	# List that holds Branch objects
 		self.speed = 0.05
-		self.maincolor =  randColor()	# Main color of the show
-		self.maindir = randDir() # Random initial main direction
+		self.maincolor =  rand_color()	# Main color of the show
+		self.maindir = rand_dir() # Random initial main direction
 		          
 	def next_frame(self):
     	
@@ -38,25 +38,25 @@ class Branches(object):
 			
 			# Check how many branches are in play
 			# If no branches, add one. If branches < 10, add more branches randomly
-			while len(self.livebranches) < 10 or oneIn(10):
+			while len(self.livebranches) < 10 or one_in(10):
 				sq = self.square.rand_square()	# Pick a random Square
-				newbranch = Branch(self.square, sq, randColorRange(self.maincolor, 0.02), choice(self.square.edges(sq)), self.maindir, 0)
+				newbranch = Branch(self.square, sq, random_color_range(self.maincolor, 0.02), choice(self.square.edges(sq)), self.maindir, 0)
 				self.livebranches.append(newbranch)
 				
 			for b in self.livebranches:
 				b.draw_branch()
 				
 				# Chance for branching
-				if oneIn(5):	# Create a fork
+				if one_in(5):	# Create a fork
 					new_dir = turn_left_or_right(b.dir)
-					new_branch = Branch(self.square, b.square_num, changeColor(b.color, 0.03), b.pos, new_dir, b.life)
+					new_branch = Branch(self.square, b.square_num, change_color(b.color, 0.03), b.pos, new_dir, b.life)
 					self.livebranches.append(new_branch)
 					
 				if b.move_branch() == False:	# branch has moved off the board
 					self.livebranches.remove(b)	# kill the branch
 								
 			# Infrequently change the dominate direction
-			if oneIn(10):
+			if one_in(10):
 				self.maindir = turn_left_or_right(self.maindir)
 			
 			yield self.speed  	# random time set in init function
