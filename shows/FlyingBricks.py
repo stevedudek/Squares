@@ -8,7 +8,7 @@ class FlyingBricks(object):
 		self.bricks = Bricks(squaremodel)
 		self.speed = 0.05
 		self.color = rand_color()
-		self.white = (255, 255, 255)
+		self.white = (255, 0, 255)
 		self.density = randint(2,10)
 		          
 	def next_frame(self):

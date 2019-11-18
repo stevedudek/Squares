@@ -14,8 +14,8 @@ class Pixel(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.curr_frame = (0,0,0)
-        self.next_frame = (0,0,0)
+        self.curr_frame = (0,255,0)
+        self.next_frame = (0,255,0)
 
     def get_coord(self):
         return self.x, self.y
@@ -35,10 +35,10 @@ class Pixel(object):
         self.curr_frame = color
 
     def set_black(self):
-        self.next_frame = (0,0,0)
+        self.next_frame = (0,255,0)
 
     def force_black(self):
-        self.curr_frame = (0,0,1)
+        self.curr_frame = (0,255,1)
         self.set_black()
 
     def update_frame(self):

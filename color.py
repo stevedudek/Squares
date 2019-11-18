@@ -96,3 +96,8 @@ def dim_color(hsv, amount):
     """dim an hsv color by a 0-1.0 range"""
     amount = max([min([amount, 1]), 0])
     return hsv[0], hsv[1], int(hsv[2] * amount)
+
+
+def color_to_int(h, s, v):
+    """Convert a (byte, byte, byte) color to an int"""
+    return h << 16 | s << 8 | v

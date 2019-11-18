@@ -4,6 +4,7 @@ Model to communicate with a Square simulator over a TCP socket
 """
 import socket
 from HelperFunctions import byte_clamp
+from color import color_to_int
 
 
 class SimulatorModel(object):
@@ -39,8 +40,8 @@ class SimulatorModel(object):
         self.send_start()
         for (cell, color) in self.dirty.items():
             (x, y) = cell
-            h, s, b = byte_clamp(color[0], wrap=True), byte_clamp(color[1]), byte_clamp(color[2])
-            msg = "{}{},{},{},{},{}".format(self.channel, x,y, h,s,b)
+            hsb_int = color_to_int(byte_clamp(color[0], wrap=True), byte_clamp(color[1]), byte_clamp(color[2]))
+            msg = "{}{},{},{}".format(self.channel, x,y, hsb_int)
 
             if self.debug:
                 print (msg)
