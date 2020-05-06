@@ -7,6 +7,7 @@ import random
 from util import memoized
 
 
+@memoized
 def load_shows(channel=None, path=None):
     "Return a list of tuples (name, class) describing shows found in the shows directory"
     if not path:
@@ -15,11 +16,11 @@ def load_shows(channel=None, path=None):
             path = os.path.join(os.path.dirname(path), 'textures')
 
     _shows = []
-
+    print("texture")
     for m in [m for m in os.listdir(path) if not m.startswith('_') and m.endswith('.py')]:
         try:
             assert m.endswith('.py')
-            m = m[:-3]  # drop the .py from the filename
+            m = m[:-3] # drop the .py from the filename
 
             base_name = "textures." if channel == 1 else "shows."
             module_name = base_name + m
@@ -71,4 +72,3 @@ def random_shows(channel=None, path=None, norepeat=None):
         if len(seen) >= norepeat:
             seen = seen[1:]
         yield n
-

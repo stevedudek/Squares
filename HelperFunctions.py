@@ -85,6 +85,7 @@ def byte_clamp(value, wrap=False):
     else:
         return max([ min([int(value), 255]), 0])
 
+
 #
 # Distance Functions
 #
@@ -99,20 +100,20 @@ def distance(coord1, coord2):
 # Fader class and its collection: the Faders class
 #
 class Faders(object):
-    def __init__(self, squaremodel):
-        self.square = squaremodel
+    def __init__(self, pixel_model):
+        self.pixel_model = pixel_model
         self.fader_array = []
 
     def __del__(self):
         del self.fader_array
 
     def add_fader(self, color, pos, intense=1.0, growing=False, change=0.25):
-        new_fader = Fader(self.square, color, pos, intense, growing, change)
+        new_fader = Fader(self.pixel_model, color, pos, intense, growing, change)
         self.fader_array.append(new_fader)
 
     def cycle_faders(self, refresh=True):
         if refresh:
-            self.square.black_all_cells()
+            self.pixel_model.black_all_cells()
 
         # Draw, update, and kill all the faders
         for f in self.fader_array:
@@ -133,8 +134,8 @@ class Faders(object):
 
 
 class Fader(object):
-    def __init__(self, squaremodel, color, pos, intense=1.0, growing=False, change=0.25):
-        self.square = squaremodel
+    def __init__(self, pixel_model, color, pos, intense=1.0, growing=False, change=0.25):
+        self.pixel_model = pixel_model
         self.pos = pos
         self.color = color
         self.intense = intense
@@ -142,7 +143,7 @@ class Fader(object):
         self.decrease = change
 
     def draw_fader(self):
-        self.square.set_cell(self.pos, gradient_wheel(self.color, self.intense))
+        self.pixel_model.set_cell(self.pos, gradient_wheel(self.color, self.intense))
 
     def fade_fader(self):
         if self.growing:
@@ -159,15 +160,15 @@ class Fader(object):
         return self.intense > 0
 
     def black_cell(self):
-        self.square.black_cell(self.pos)
+        self.pixel_model.black_cell(self.pos)
 
 
 #
 # Brick class and its collection: the Bricks class
 #
 class Bricks(object):
-    def __init__(self, squaremodel, bounce=False):
-        self.square = squaremodel
+    def __init__(self, pixel_model, bounce=False):
+        self.pixel_model = pixel_model
         self.bounce = bounce
         self.brick_array = []
 
@@ -176,13 +177,13 @@ class Bricks(object):
 
     def add_brick(self, color, life, pos, length, pitch, length_x, length_y, dx, dy,
                   accel_x=0, accel_y=0, use_faders=False, change=0.25):
-        new_brick = Brick(self.square, color, life, pos, length, pitch,
+        new_brick = Brick(self.pixel_model, color, life, pos, length, pitch,
                           length_x, length_y, dx, dy, accel_x, accel_y, use_faders, change)
         self.brick_array.append(new_brick)
 
     def move_bricks(self, refresh=True):
         if refresh:
-            self.square.black_all_cells()
+            self.pixel_model.black_all_cells()
 
         # Draw, move, update, and kill all the bricks
         for b in self.brick_array:
@@ -220,9 +221,9 @@ class Bricks(object):
 
 
 class Brick(object):
-    def __init__(self, squaremodel, color, life, pos, length, pitch, length_x, length_y, dx, dy, accel_x=0, accel_y=0,
+    def __init__(self, pixel_model, color, life, pos, length, pitch, length_x, length_y, dx, dy, accel_x=0, accel_y=0,
                  use_faders=False, change=0.25):
-        self.square = squaremodel
+        self.pixel_model = pixel_model
         self.color = color
         self.life = life
         self.pos = pos
@@ -235,7 +236,7 @@ class Brick(object):
         self.accel_x = accel_x
         self.accel_y = accel_y
         self.use_faders = use_faders
-        self.faders = Faders(squaremodel) if self.use_faders else None
+        self.faders = Faders(pixel_model) if self.use_faders else None
         self.change = change
 
     def __del__(self):
@@ -249,7 +250,7 @@ class Brick(object):
             if self.use_faders:
                 self.faders.add_fader(self.color, pos, intense=1.0, growing=False, change=self.change)
             else:
-                self.square.set_cell(pos, self.color)
+                self.pixel_model.set_cell(pos, self.color)
 
         if self.use_faders:
             self.faders.cycle_faders(False)
@@ -259,10 +260,10 @@ class Brick(object):
         new_y = self.pos[1] + self.dy
 
         if bounce:
-            if new_x < 0 or new_x >= self.square.width:
+            if new_x < 0 or new_x >= self.pixel_model.width:
                 self.dx *= -1
                 new_x = self.pos[0] + self.dx
-            if new_y < 0 or new_y >= self.square.height:
+            if new_y < 0 or new_y >= self.pixel_model.height:
                 self.dy *= -1
                 new_y = self.pos[1] + self.dy
 

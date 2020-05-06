@@ -8,10 +8,13 @@ from math import sin, cos, pi
 from pixel import Pixel
 
 BIG_COORD = [ (0,0), (1,0), (2,0), (3,0) ]
-
+NUM_DISPLAYS = len(BIG_COORD)
 SQUARE_SIZE = 12    # Number of LEDs high/wide for each square
 
 """
+March 2020 Changes
+1. DMX King
+
 July 2019 Changes
 1. Implement Pixel class in place of hash table
 
@@ -23,37 +26,25 @@ Parameters for each Square: (X, Y)
 """
 
 
-def load_squares(model):
-    return Square(model)
-
-
 class Square(object):
     """
     Square object (= square model) represents all LEDs (so all 4 giant squares)
     Each Square is composed of Pixel objects
 
     Square coordinates are stored in a hash table.
-    Keys are (r,p,d) coordinate triples
-    Values are (strip, pixel) triples
-    
-    Frames implemented to shorten messages:
-    Send only the pixels that change color
-    Frames are hash tables where keys are (r,p,d) coordinates
-    and values are (r,g,b) colors
+    Keys are (s,x,y) coordinate triples
+    Pixel objects are the values
     """
-    def __init__(self, model):
-        # General features of the Squares (such as size)
-        self.squares = len(BIG_COORD)  # number of squares; not sure if this is used
+    def __init__(self):
         self.size = (self.width, self.height)
-
-        self.model = model
-
-        # cellmap previously was dictionary of { coord: color }
-        # new cellmap implementation is dictionary of { coord: pixel object }
-        self.cellmap = self.add_squares()
+        self.cellmap = self.add_pixels()  # { coord: pixel object }
 
     def __repr__(self):
         return "Squares: {} x {}".format(self.width, self.height)
+
+    @property
+    def squares(self):
+        return NUM_DISPLAYS
 
     def all_cells(self):
         """Get all valid coordinates"""
@@ -62,6 +53,9 @@ class Square(object):
     def all_pixels(self):
         """Get all pixel objects"""
         return self.cellmap.values()
+
+    def all_onscreen_pixels(self):
+        return [pixel for pixel in self.all_pixels() if pixel.cell_exists()]
 
     def cell_exists(self, coord):
         """True if the coordinate is valid"""
@@ -73,7 +67,7 @@ class Square(object):
 
     def inbounds(self, coord):
         """Is the coordinate inbounds?"""
-        (x,y) = coord
+        (x, y) = coord
         return 0 <= x < self.width and 0 <= y < self.height
 
     def set_cell(self, coord, color, wrap=False):
@@ -83,7 +77,7 @@ class Square(object):
             coord = (x % self.width, y % self.height)
 
         if self.cell_exists(coord):
-            self.get_pixel(coord).set_next_frame(color)
+            self.get_pixel(coord).set_color(color)
 
     def set_cells(self, coords, color, wrap=False):
         """Set the pixels at coords to color hsv"""
@@ -92,8 +86,8 @@ class Square(object):
 
     def set_all_cells(self, color):
         """Set all cells to color hsv"""
-        for pixel in self.all_pixels():
-            pixel.set_next_frame(color)
+        for pixel in self.all_onscreen_pixels():
+            pixel.set_color(color)
 
     def black_cell(self, coord):
         """Blacken the pixel at coord (x,y)"""
@@ -102,47 +96,34 @@ class Square(object):
 
     def black_all_cells(self):
         """Blacken all pixels"""
-        for pixel in self.all_pixels():
+        for pixel in self.all_onscreen_pixels():
             pixel.set_black()
 
     def clear(self):
         """Force all cells to black"""
-        for pixel in self.all_pixels():
+        for pixel in self.all_onscreen_pixels():
             pixel.force_black()
-        self.go()
 
-    #
-    # Sending messages to the model: delay, intensity, frame
-    #
-    def go(self):
-        """Push the frame to the model"""
-        self.send_frame()
-        self.model.go()
+    def push_next_to_current_frame(self):
+        """Push the next frame back into the current frame"""
+        for pixel in self.all_onscreen_pixels():
+            pixel.push_next_to_current_frame()
 
-    def send_delay(self, delay):
-        """Send the delay signal"""
-        self.model.send_delay(delay)
-
-    def send_intensity(self, intensity):
-        """Send the intensity signal"""
-        self.model.send_intensity(intensity)
-
-    def send_frame(self):
-        """If a pixel has changed, send its coord + color, then update the pixel's frame"""
-        for pixel in self.all_pixels():
-            if pixel.has_changed():
-                self.model.set_cell(pixel.get_coord(), pixel.get_next_color())
-                pixel.update_frame()
+    def interpolate_frame(self, fraction):
+        """Dump the current frame into the interp frame"""
+        for pixel in self.all_onscreen_pixels():
+            pixel.interpolate_frame(fraction)
 
     #
     # Setting up the Square
     #
-    def add_squares(self):
+    @staticmethod
+    def add_pixels():
         """cellmap is a dictionary of { coord: pixel object }
            could do this as a complicated one-liner, but not worth the obscurity"""
         cellmap = {}
 
-        for (BIG_X, BIG_Y) in BIG_COORD:
+        for BIG_X, BIG_Y in BIG_COORD:
             for x in range(SQUARE_SIZE):
                 for y in range(SQUARE_SIZE):
                     x_coord = x + (BIG_X * SQUARE_SIZE)
@@ -168,7 +149,7 @@ class Square(object):
 
     def rand_cell(self):
         """Pick a random coordinate"""
-        return choice(self.cellmap.keys())
+        return choice(list(self.cellmap.keys()))
 
     @staticmethod
     def rand_square():
@@ -198,7 +179,8 @@ class Square(object):
                [(0, y) for y in range(self.height)] + \
                [(self.width - 1, y) for y in range(self.height)]
 
-    def is_on_square(self, square_num, coord):
+    @staticmethod
+    def is_on_square(square_num, coord):
         """Is the coordinate on a particular square?"""
         (x, y) = coord
         (x_corner, y_corner) = get_LL_corner(square_num)
@@ -286,8 +268,8 @@ def get_LL_corner(square_num):
     """
     Returns the lower-left coordinate of the square_num
     """
-    (big_x, big_y) = BIG_COORD[square_num]
-    return (big_x * SQUARE_SIZE, big_y * SQUARE_SIZE)
+    big_x, big_y = BIG_COORD[square_num]
+    return big_x * SQUARE_SIZE, big_y * SQUARE_SIZE
 
 
 def get_center(square_num):
